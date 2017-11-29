@@ -1,9 +1,23 @@
+{- |
+   Module     : DataBaseModule
+   Copyright  : Copyright (C) 2017 Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+This module handles all database related parts of this application.
+
+Written by Johannes Hartmann, ec17512@qmul.ac.uk
+-}
+
 module DataBaseModule
     ( dbConnect,
       initialiseDB,
       insertMovieIntoDB,
       insertActorIntoDB,
-      searchMovieInDB
+      searchMoviesInDB
     ) where
 
 import Database.HDBC
@@ -11,16 +25,25 @@ import Database.HDBC.Sqlite3
 import Data.List
 import DataStructures
 
+-- | Establishes the connection to our movie database
 dbConnect :: IO Connection
 dbConnect = connectSqlite3 "movies.db"
 
+{- | Given a connection to a database this function creates all the neccesary
+     tables if they are not existing bevore -}
 initialiseDB :: Connection -> IO ()
 initialiseDB conn = do
-   run conn "CREATE TABLE movies (movieId BIGINT(11), name VARCHAR(40))" []
-   run conn "CREATE TABLE actores (actorId BIGINT(11), name VARCHAR(40))" []
-   run conn "CREATE TABLE plays (actorId BIGINT(11), movieId BIGINT(11))" []
-   print "Database initialised!"
+   tables <- getTables conn
+   if "prices" `notElem` tables then do
+     run conn "CREATE TABLE movies (movieId BIGINT(11), name VARCHAR(40))" []
+     run conn "CREATE TABLE actores (actorId BIGINT(11), name VARCHAR(40))" []
+     run conn "CREATE TABLE plays (actorId BIGINT(11), movieId BIGINT(11))" []
+     commit conn
+     print "Database initialised!"
+    else
+      return ()
 
+-- | Inserts a given list of movies into the movies table
 insertMovieIntoDB :: Connection -> [Movie] -> IO ()
 insertMovieIntoDB conn movie = do
     let f (Movie movieId name) = [toSql movieId, toSql name]
@@ -31,6 +54,8 @@ insertMovieIntoDB conn movie = do
     commit conn
     print "Commited values to the Database!"
 
+{- | Inserts a given list of actors into the actores table and fills the plays
+     relation table with all actore movie connections -}
 insertActorIntoDB :: Connection -> [Actor] -> IO ()
 insertActorIntoDB conn actores = do
     -- creating actores table
@@ -47,5 +72,7 @@ insertActorIntoDB conn actores = do
     commit conn
     print "Commited values to the Database!"
 
-searchMovieInDB :: Connection -> String -> IO Movie
-searchMovieInDB = undefined
+{- | Looksup al movies a given actore plays in and returns a maybe list of movie.
+     The maybe will Nothing if there is no movie for a given Actore -}
+searchMoviesInDB :: Connection -> String -> IO (Maybe [Movie])
+searchMoviesInDB = undefined
