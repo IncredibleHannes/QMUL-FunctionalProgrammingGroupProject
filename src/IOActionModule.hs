@@ -1,7 +1,9 @@
 module IOActionModule
     ( askForLocation,
       askForActor,
-      printCinemas
+      askToSelectAmovie,
+      printCinemas,
+      printMovies,
     ) where
 
 import DataStructures
@@ -12,5 +14,11 @@ askForLocation = undefined
 askForActor :: IO String
 askForActor = undefined
 
+askToSelectAmovie :: IO Int
+askToSelectAmovie = undefined
+
 printCinemas :: [Cinema] -> IO ()
 printCinemas = undefined
+
+printMovies :: Maybe[Movie] -> IO()
+printMovies = undefined
