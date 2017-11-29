@@ -25,3 +25,4 @@ main = do
   location <- askForLocation                                -- IOModule
   let listOfCinemas = httpApiCinemaRequest movie location   -- HttpRequestModule2
   printCinemas listOfCinemas                                -- IOModule
+  disconnectDB conn

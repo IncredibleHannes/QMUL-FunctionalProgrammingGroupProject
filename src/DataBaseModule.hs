@@ -17,7 +17,8 @@ module DataBaseModule
       initialiseDB,
       insertMovieIntoDB,
       insertActorIntoDB,
-      searchMoviesInDB
+      searchMoviesInDB,
+      disconnectDB
     ) where
 
 import Database.HDBC
@@ -34,14 +35,13 @@ dbConnect = connectSqlite3 "movies.db"
 initialiseDB :: Connection -> IO ()
 initialiseDB conn = do
    tables <- getTables conn
-   if "prices" `notElem` tables then do
-     run conn "CREATE TABLE movies (movieId BIGINT(11), name VARCHAR(40))" []
-     run conn "CREATE TABLE actores (actorId BIGINT(11), name VARCHAR(40))" []
-     run conn "CREATE TABLE plays (actorId BIGINT(11), movieId BIGINT(11))" []
-     commit conn
-     print "Database initialised!"
-    else
-      return ()
+   run conn "DROP TABLE IF EXISTS movies" []
+   run conn "DROP TABLE IF EXISTS actors" []
+   run conn "DROP TABLE IF EXISTS plays" []
+   run conn "CREATE TABLE movies (movieId INT PRIMARY KEY, name TEXT NOT NULL)" []
+   run conn "CREATE TABLE actors (actorId INT PRIMARY KEY, name TEXT NOT NULL)" []
+   run conn "CREATE TABLE plays (actorId INT NOT NULL, movieId INT NOT NULL, PRIMARY KEY (actorId, movieId) FOREIGN KEY (movieId) REFERENCES movies(movieId), FOREIGN KEY (actorId) REFERENCES actors(actorId))" []
+   commit conn
 
 -- | Inserts a given list of movies into the movies table
 insertMovieIntoDB :: Connection -> [Movie] -> IO ()
@@ -50,9 +50,7 @@ insertMovieIntoDB conn movie = do
     let args = map f movie
     stmt <- prepare conn "INSERT INTO movies VALUES (?, ?)"
     executeMany stmt args
-    print "Movie Database filled with values!"
     commit conn
-    print "Commited values to the Database!"
 
 {- | Inserts a given list of actors into the actores table and fills the plays
      relation table with all actore movie connections -}
@@ -61,18 +59,29 @@ insertActorIntoDB conn actores = do
     -- creating actores table
     let f (Actor actorId name _) = [toSql actorId, toSql name]
     let actoresArgs = map f actores
-    stmt <- prepare conn "INSERT INTO actores VALUES (?, ?)"
+    stmt <- prepare conn "INSERT INTO actors VALUES (?, ?)"
     executeMany stmt actoresArgs
     -- creating plays table
     let f (Actor actorId n [])     = []
-        f (Actor actorId n (x:xs)) = [actorId, x] : f (Actor actorId n xs)
+        f (Actor actorId n (x:xs)) = [toSql actorId, toSql x] : f (Actor actorId n xs)
     let playsArgs = concatMap f actores
-    executeMany stmt actoresArgs
-    print "Actor Database filled with values!"
+    stmt <- prepare conn "INSERT INTO plays VALUES (?, ?)"
+    executeMany stmt playsArgs
     commit conn
-    print "Commited values to the Database!"
 
 {- | Looksup al movies a given actore plays in and returns a maybe list of movie.
      The maybe will Nothing if there is no movie for a given Actore -}
 searchMoviesInDB :: Connection -> String -> IO (Maybe [Movie])
-searchMoviesInDB = undefined
+searchMoviesInDB conn name = do
+  result <- quickQuery' conn ("SELECT movies.* FROM movies, actors, plays WHERE actors.name == ? " ++
+                              "AND actors.actorId = plays.actorId " ++
+                              "AND  plays.movieId = movies.movieId") [toSql name]
+  case result of
+    [] -> return Nothing
+    x  -> return (Just $ convertFromSql x)
+  where
+    convertFromSql :: [[SqlValue]] -> [Movie]
+    convertFromSql = map (\x -> Movie (fromSql $ head x) (fromSql $ x !! 1))
+
+disconnectDB :: Connection -> IO ()
+disconnectDB = disconnect

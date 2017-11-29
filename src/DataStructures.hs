@@ -20,10 +20,13 @@ module DataStructures(
 {- | Data structure representig a movie. The first parameter is the ID and the
      second is the name of the movie -}
 data Movie = Movie Int String
+  deriving (Eq, Show)
 {- | Data structure representig a actor. The first parameter is the ID, the
      second is the name of the actor and the third are all movies he plays in -}
 data Actor = Actor Int String [Int]
+  deriving (Eq, Show)
 {- | Data structure representig a cinema. The first parameter is the ID, the
      second is the name of the cinema and the third is the range to the given
      location -}
 data Cinema = Cinema Int String Int
+  deriving (Eq, Show)
