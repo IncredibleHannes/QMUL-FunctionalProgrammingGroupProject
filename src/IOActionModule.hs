@@ -21,4 +21,5 @@ printCinemas :: [Cinema] -> IO ()
 printCinemas = undefined
 
 printMovies :: Maybe[Movie] -> IO()
-printMovies = undefined
+printMovies Nothing  = error "Could't find a movie for the given actore"
+printMovies (Just x) = undefined
