@@ -1,7 +1,7 @@
 module DataStructures(
-      Movie,
-      Actor,
-      Cinema
+      Movie(Movie),
+      Actor(Actor),
+      Cinema(Cinema)
     ) where
 
 data Movie = Movie Int String
