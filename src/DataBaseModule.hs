@@ -18,7 +18,8 @@ module DataBaseModule
       insertMovieIntoDB,
       insertActorIntoDB,
       searchMoviesInDB,
-      disconnectDB
+      disconnectDB,
+      clearDatabase
     ) where
 
 import Database.HDBC
@@ -35,12 +36,9 @@ dbConnect = connectSqlite3 "movies.db"
 initialiseDB :: Connection -> IO ()
 initialiseDB conn = do
    tables <- getTables conn
-   run conn "DROP TABLE IF EXISTS movies" []
-   run conn "DROP TABLE IF EXISTS actors" []
-   run conn "DROP TABLE IF EXISTS plays" []
-   run conn "CREATE TABLE movies (movieId INT PRIMARY KEY, name TEXT NOT NULL)" []
-   run conn "CREATE TABLE actors (actorId INT PRIMARY KEY, name TEXT NOT NULL)" []
-   run conn "CREATE TABLE plays (actorId INT NOT NULL, movieId INT NOT NULL, PRIMARY KEY (actorId, movieId) FOREIGN KEY (movieId) REFERENCES movies(movieId), FOREIGN KEY (actorId) REFERENCES actors(actorId))" []
+   run conn "CREATE TABLE IF NOT EXISTS movies (movieId INT PRIMARY KEY ON CONFLICT IGNORE, name TEXT NOT NULL)" []
+   run conn "CREATE TABLE IF NOT EXISTS actors (actorId INT PRIMARY KEY ON CONFLICT IGNORE, name TEXT NOT NULL)" []
+   run conn "CREATE TABLE IF NOT EXISTS plays (actorId INT NOT NULL, movieId INT NOT NULL, PRIMARY KEY (actorId, movieId) ON CONFLICT IGNORE, FOREIGN KEY (movieId) REFERENCES movies(movieId), FOREIGN KEY (actorId) REFERENCES actors(actorId))" []
    commit conn
 
 -- | Inserts a given list of movies into the movies table
@@ -86,3 +84,14 @@ searchMoviesInDB conn name = do
 -- | Closes the database connection
 disconnectDB :: Connection -> IO ()
 disconnectDB = disconnect
+
+clearDatabase :: Connection -> IO()
+clearDatabase conn = do
+   tables <- getTables conn
+   run conn "DROP TABLE IF EXISTS movies" []
+   run conn "DROP TABLE IF EXISTS actors" []
+   run conn "DROP TABLE IF EXISTS plays" []
+   commit conn
+
+--clenupDatabase :: Connection -> Date -> IO ()
+--clenupDatabase = undefined

@@ -37,10 +37,11 @@ dataBaseModuleTests = TestList [ TestLabel "Testing if the result is nothing" da
 setupTest :: [Movie] -> [Actor] -> String -> String -> Maybe[Movie] -> Test
 setupTest movie actor name description expected = TestCase ( do
   conn <- dbConnect
-  _ <- initialiseDB conn
-  _ <- insertMovieIntoDB conn movie
-  _ <- insertActorIntoDB conn actor
+  initialiseDB conn
+  insertMovieIntoDB conn movie
+  insertActorIntoDB conn actor
   movie <- searchMoviesInDB conn name
+  clearDatabase conn
   disconnectDB conn
   assertEqual description movie expected
   )
