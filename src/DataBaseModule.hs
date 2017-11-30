@@ -69,8 +69,8 @@ insertActorIntoDB conn actores = do
     executeMany stmt playsArgs
     commit conn
 
-{- | Looksup al movies a given actore plays in and returns a maybe list of movie.
-     The maybe will Nothing if there is no movie for a given Actore -}
+{- | Looksup all movies a given actore plays in and returns a maybe list of movie.
+     The maybe will Nothing if there is no movie for a given actore -}
 searchMoviesInDB :: Connection -> String -> IO (Maybe [Movie])
 searchMoviesInDB conn name = do
   result <- quickQuery' conn ("SELECT movies.* FROM movies, actors, plays WHERE actors.name == ? " ++
@@ -83,5 +83,6 @@ searchMoviesInDB conn name = do
     convertFromSql :: [[SqlValue]] -> [Movie]
     convertFromSql = map (\x -> Movie (fromSql $ head x) (fromSql $ x !! 1))
 
+-- | Closes the database connection
 disconnectDB :: Connection -> IO ()
 disconnectDB = disconnect

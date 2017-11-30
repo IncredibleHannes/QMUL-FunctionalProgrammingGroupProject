@@ -1,3 +1,17 @@
+{- |
+   Module     : Tests
+   Copyright  : Copyright (C) 2017 Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+Some tests to test the application
+
+Written by Johannes Hartmann, ec17512@qmul.ac.uk
+-}
+
 import Test.HUnit
 
 import DataBaseModule

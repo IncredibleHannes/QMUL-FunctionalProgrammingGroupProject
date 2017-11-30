@@ -1,3 +1,20 @@
+{- |
+   Module     : Main
+   Copyright  : Copyright (C) 2017 Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+This application is downloading all recent movies from the TheMovieDB api and stores it into a
+SQLite database. The user types in an actor ant this applicatio is looking him up and printMovies
+out all movies he's playing in. For a given location it suggests cinemas in the areas that play
+this movie.
+
+Written by Johannes Hartmann, ec17512@qmul.ac.uk
+-}
+
 module Main where
 
 import HTTPRequestModule
@@ -25,4 +42,4 @@ main = do
   location <- askForLocation                                -- IOModule
   let listOfCinemas = httpApiCinemaRequest movie location   -- HttpRequestModule2
   printCinemas listOfCinemas                                -- IOModule
-  disconnectDB conn
+  disconnectDB conn                                         -- DataBaseModule
