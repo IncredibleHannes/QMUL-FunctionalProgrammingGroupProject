@@ -8,7 +8,7 @@ import DataStructures
 import JSONParserModule
 
 import Network.URI
-import Network.HTTP.Conduit 
+import Network.HTTP.Conduit (simpleHttp)
 import Data.Maybe
 import Data.Either
 
