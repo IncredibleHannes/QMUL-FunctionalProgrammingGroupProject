@@ -51,20 +51,20 @@ dataBaseTest = setupTest [] [] "test" "Shouldn fine a movie" Nothing
 
 
 dataBaseTest2 :: Test
-dataBaseTest2 = setupTest [Movie 1 "Movie"] [Actor 1 "Johannes" [1]]
-                  "Johannes" "Should find a movie" (Just [Movie 1 "Movie"])
+dataBaseTest2 = setupTest [Movie 1 "Movie" "2017-07-30"] [Actor 1 "Johannes" [1]]
+                  "Johannes" "Should find a movie" (Just [Movie 1 "Movie" "2017-07-30"])
 
 dataBaseTest3 :: Test
-dataBaseTest3 = setupTest [ Movie 1 "Doctor Who", Movie 2 "Lord of the Rings", Movie 3 "Star Wars" ]
+dataBaseTest3 = setupTest [ Movie 1 "Doctor Who" "2017-07-30", Movie 2 "Lord of the Rings" "2017-07-30", Movie 3 "Star Wars" "2017-07-30" ]
                   [ Actor 1 "Johannes" [1,2,3], Actor 2 "Manuel" [2,3], Actor 3 "Liam" [1] ]
                   "Johannes" "Should find tree a movies"
-                  (Just [ Movie 1 "Doctor Who", Movie 2 "Lord of the Rings", Movie 3 "Star Wars" ])
+                  (Just [ Movie 1 "Doctor Who" "2017-07-30", Movie 2 "Lord of the Rings" "2017-07-30", Movie 3 "Star Wars" "2017-07-30" ])
 
 dataBaseTest4 :: Test
 dataBaseTest4 = setupTest [] [Actor 1 "Clara Oswald" [1]] "Clara Oswald" "Should return Nothig" Nothing
 
 dataBaseTest5 :: Test
-dataBaseTest5 = setupTest [Movie 1 "Doctor Who"] [] "Clara Oswald" "Should return Nothig" Nothing
+dataBaseTest5 = setupTest [Movie 1 "Doctor Who" "2017-07-30"] [] "Clara Oswald" "Should return Nothig" Nothing
 
 dataStructuresTests :: Test
 dataStructuresTests     = TestList []

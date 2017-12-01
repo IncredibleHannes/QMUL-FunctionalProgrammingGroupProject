@@ -19,13 +19,15 @@ module DataBaseModule
       insertActorIntoDB,
       searchMoviesInDB,
       disconnectDB,
-      clearDatabase
+      clearDatabase,
+      cleanupDatabase
     ) where
 
 import Database.HDBC
 import Database.HDBC.Sqlite3
 import Data.List
 import DataStructures
+import Data.Time.Calendar
 
 -- | Establishes the connection to our movie database
 dbConnect :: IO Connection
@@ -36,7 +38,7 @@ dbConnect = connectSqlite3 "movies.db"
 initialiseDB :: Connection -> IO ()
 initialiseDB conn = do
    tables <- getTables conn
-   run conn "CREATE TABLE IF NOT EXISTS movies (movieId INT PRIMARY KEY ON CONFLICT IGNORE, name TEXT NOT NULL)" []
+   run conn "CREATE TABLE IF NOT EXISTS movies (movieId INT PRIMARY KEY ON CONFLICT IGNORE, name TEXT NOT NULL, release TEXT NOT NULL)" []
    run conn "CREATE TABLE IF NOT EXISTS actors (actorId INT PRIMARY KEY ON CONFLICT IGNORE, name TEXT NOT NULL)" []
    run conn "CREATE TABLE IF NOT EXISTS plays (actorId INT NOT NULL, movieId INT NOT NULL, PRIMARY KEY (actorId, movieId) ON CONFLICT IGNORE, FOREIGN KEY (movieId) REFERENCES movies(movieId), FOREIGN KEY (actorId) REFERENCES actors(actorId))" []
    commit conn
@@ -44,9 +46,9 @@ initialiseDB conn = do
 -- | Inserts a given list of movies into the movies table
 insertMovieIntoDB :: Connection -> [Movie] -> IO ()
 insertMovieIntoDB conn movie = do
-    let f (Movie movieId name) = [toSql movieId, toSql name]
+    let f (Movie movieId name release) = [toSql movieId, toSql name, toSql release]
     let args = map f movie
-    stmt <- prepare conn "INSERT INTO movies VALUES (?, ?)"
+    stmt <- prepare conn "INSERT INTO movies VALUES (?, ?, ?)"
     executeMany stmt args
     commit conn
 
@@ -79,7 +81,7 @@ searchMoviesInDB conn name = do
     x  -> return (Just $ convertFromSql x)
   where
     convertFromSql :: [[SqlValue]] -> [Movie]
-    convertFromSql = map (\x -> Movie (fromSql $ head x) (fromSql $ x !! 1))
+    convertFromSql = map (\x -> Movie (fromSql $ head x) (fromSql $ x !! 1) (fromSql $ x !! 2))
 
 -- | Closes the database connection
 disconnectDB :: Connection -> IO ()
@@ -87,11 +89,10 @@ disconnectDB = disconnect
 
 clearDatabase :: Connection -> IO()
 clearDatabase conn = do
-   tables <- getTables conn
    run conn "DROP TABLE IF EXISTS movies" []
    run conn "DROP TABLE IF EXISTS actors" []
    run conn "DROP TABLE IF EXISTS plays" []
    commit conn
 
---clenupDatabase :: Connection -> Date -> IO ()
---clenupDatabase = undefined
+cleanupDatabase :: Connection -> Day -> IO ()
+cleanupDatabase = undefined
