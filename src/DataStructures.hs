@@ -23,6 +23,7 @@ data Movie = Movie Int String String
   deriving (Eq, Show)
 {- | Data structure representig a actor. The first parameter is the ID, the
      second is the name of the actor and the third are all movies he plays in -}
+     -- maybe use list of movies
 data Actor = Actor Int String [Int]
   deriving (Eq, Show)
 {- | Data structure representig a cinema. The first parameter is the ID, the
