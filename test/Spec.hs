@@ -35,11 +35,11 @@ dataBaseModuleTests = TestList [ TestLabel "Testing if the result is nothing"
                         dataBaseTest3,
                         TestLabel "Trying a inconsistent database" dataBaseTest4,
                         TestLabel "Trying a inconsistent database" dataBaseTest5,
-                        TestLabel "Cleaning up database" dataBaseCleanupTest,
-                        TestLabel "Cleaning up database" dataBaseCleanupTest1,
-                        TestLabel "Cleaning up database" dataBaseCleanupTest2,
-                        TestLabel "Cleaning up database" dataBaseCleanupTest3,
-                        TestLabel "Cleaning up database" dataBaseCleanupTest4]
+                        TestLabel "Cleaning up database 1" dataBaseCleanupTest,
+                        TestLabel "Cleaning up database 2" dataBaseCleanupTest1,
+                        TestLabel "Cleaning up database 3" dataBaseCleanupTest2,
+                        TestLabel "Cleaning up database 4" dataBaseCleanupTest3,
+                        TestLabel "Cleaning up database 5" dataBaseCleanupTest4]
 
 setupTest :: [Movie] -> [Actor] -> String -> String -> Maybe[Movie] -> Test
 setupTest movie actor name description expected = TestCase ( do
@@ -58,7 +58,8 @@ dataBaseTest = setupTest [] [] "test" "Shouldn fine a movie" Nothing
 
 
 dataBaseTest2 :: Test
-dataBaseTest2 = setupTest [Movie 1 "Movie" "2017-07-30"] [Actor 1 "Johannes" [1]]
+dataBaseTest2 = setupTest [Movie 1 "Movie" "2017-07-30"] [Actor 1 "Johannes"
+                  [Movie 1 "Movie" "2017-07-30"] ]
                   "Johannes" "Should find a movie" (Just
                   [Movie 1 "Movie" "2017-07-30"])
 
@@ -66,15 +67,18 @@ dataBaseTest3 :: Test
 dataBaseTest3 = setupTest [ Movie 1 "Doctor Who" "2017-07-30",
                             Movie 2 "Lord of the Rings" "2017-07-30",
                             Movie 3 "Star Wars" "2017-07-30" ]
-                  [ Actor 1 "Johannes" [1,2,3], Actor 2 "Manuel" [2,3],
-                    Actor 3 "Liam" [1] ]
+                  [ Actor 1 "Johannes" [ Movie 1 "Doctor Who" "2017-07-30",
+                  Movie 2 "Lord of the Rings" "2017-07-30",
+                  Movie 3 "Star Wars" "2017-07-30" ],
+                    Actor 2 "Manuel" [ Movie 1 "Doctor Who" "2017-07-30"],
+                    Actor 3 "Liam" [] ]
                   "Johannes" "Should find tree a movies"
                   (Just [ Movie 1 "Doctor Who" "2017-07-30",
                           Movie 2 "Lord of the Rings" "2017-07-30",
                           Movie 3 "Star Wars" "2017-07-30" ])
 
 dataBaseTest4 :: Test
-dataBaseTest4 = setupTest [] [Actor 1 "Clara Oswald" [1]]
+dataBaseTest4 = setupTest [] [Actor 1 "Clara Oswald" [Movie 1 "Doctor Who" "2017-07-30"]]
                   "Clara Oswald" "Should return Nothig" Nothing
 
 dataBaseTest5 :: Test
@@ -122,14 +126,16 @@ setupCleanupTest2 movies actores date description expected = TestCase ( do
 dataBaseCleanupTest3 :: Test
 dataBaseCleanupTest3 = setupCleanupTest2 [Movie 1 "Doctor Who" "2016-01-01",
                         Movie 2 "Boradchurch" "2017-01-02"]
-                        [Actor 1 "David Tennant" [1,2]]
+                        [Actor 1 "David Tennant" [Movie 1 "Doctor Who" "2016-01-01",
+                        Movie 2 "Boradchurch" "2017-01-02"]]
                         "2017-01-03" "The actore should be removed" []
 dataBaseCleanupTest4 :: Test
 dataBaseCleanupTest4 = setupCleanupTest2 [Movie 1 "Doctor Who" "2016-01-01",
                         Movie 2 "Boradchurch" "2017-01-02"]
-                        [Actor 1 "David Tennant" [1,2]]
+                        [Actor 1 "David Tennant" [Movie 1 "Doctor Who" "2016-01-01",
+                         Movie 2 "Boradchurch" "2017-01-02"]]
                         "2016-02-01" "The movie schould be removed from the actore"
-                        [Actor 1 "David Tennant" [2]]
+                        [Actor 1 "David Tennant" [Movie 2 "Boradchurch" "2017-01-02"]]
 
 dataStructuresTests :: Test
 dataStructuresTests     = TestList []

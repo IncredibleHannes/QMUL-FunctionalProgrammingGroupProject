@@ -70,7 +70,7 @@ insertActorIntoDB conn actores = do
     executeMany stmt actoresArgs
     -- creating plays table
     let f (Actor actorId n [])     = []
-        f (Actor actorId n (x:xs)) = [toSql actorId, toSql x] : f (Actor actorId n xs)
+        f (Actor actorId n (Movie movieId _ _ : xs)) = [toSql actorId, toSql movieId]  : f (Actor actorId n xs)
     let playsArgs = concatMap f actores
     stmt <- prepare conn "INSERT INTO plays VALUES (?, ?)"
     executeMany stmt playsArgs
@@ -117,9 +117,13 @@ getActorsFromDatabase :: Connection -> IO [Actor]
 getActorsFromDatabase conn = do
   result <- quickQuery' conn "SELECT * FROM actors" []
   let ids = map head result
-  result2 <- mapM (\x -> quickQuery' conn "SELECT plays.movieId FROM plays WHERE ? = plays.actorId" [x]) ids
-  let finalResult = zip result (concat result2)
-  return $ map (\x -> Actor (fromSql $ head $ fst x) (fromSql $ fst x !! 1) (map fromSql (snd x))) finalResult
+  result2 <- mapM (\x -> quickQuery' conn ("SELECT movies.* FROM movies, plays " ++
+              "WHERE ? = plays.actorId AND plays.movieId = movies.movieId") [x]) ids
+  let finalResult = zip result result2
+  return $ map (\x -> Actor (fromSql $ head $ fst x) (fromSql $ fst x !! 1) (map parseMovie (snd x))) finalResult
+
+parseMovie :: [SqlValue] -> Movie
+parseMovie x = Movie (fromSql $ head x) (fromSql $ x !! 1) (fromSql $ x !! 2)
 
 {- | removes all movies bevor a given date and deals with inonsistent states in the
      database after the deletion of a movie-}

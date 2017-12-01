@@ -9,6 +9,8 @@ import JSONParserModule
 
 httpGetListOfMovies = undefined
 httpGetListOfActores = undefined
+
+
 {-
 import Network.URI
 import Network.HTTP
@@ -46,4 +48,4 @@ httpGetListOfActores = do
 	actorsStr <- download actorReqURL
 	actors :: [Actor] = map parseActors actorsStr
     return actors
-  -}
+-}
