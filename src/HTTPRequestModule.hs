@@ -1,6 +1,8 @@
 module HTTPRequestModule
     ( httpGetListOfMovies,
-      httpGetListOfActores
+      httpGetListOfActores,
+      download,
+      movieReqURL
     ) where
 
 import Data.List
@@ -8,7 +10,8 @@ import DataStructures
 import JSONParserModule
 
 import Network.URI
-import Network.HTTP.Conduit (simpleHttp)
+import Network.HTTP.Simple
+import Network.HTTP.Client
 import Data.Maybe
 import Data.Either
 
@@ -23,16 +26,10 @@ makeURI str = fromJust $ parseURI $ str
 
 download :: String -> IO String
 download str = do
-  resp <- simpleHTTP request
-  rBody <- getResponseBody $ resp
+  req <- parseRequest str
+  resp <- httpJSON req
+  let rBody = responseBody $ resp
   return rBody
-    where
-    	request = Request {
-    	    rqURI = makeURI $ str,
-    	    rqMethod = GET,
-    	    rqHeaders = [],
-    	    rqBody = ""
-           }
 
 httpGetListOfMovies :: IO [Movie]
 httpGetListOfMovies = do
