@@ -17,8 +17,6 @@ module DataStructures(
       Cinema(Cinema)
     ) where
 
-import Data.Time.Calendar
-
 {- | Data structure representig a movie. The first parameter is the ID and the
      second is the name of the movie and the third the release day -}
 data Movie = Movie Int String String
