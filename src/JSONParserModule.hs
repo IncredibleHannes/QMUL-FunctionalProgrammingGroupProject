@@ -1,12 +1,13 @@
 module JSONParserModule
     (parseMovies
-) where
+    ,parseActors
+     ) where
 
 import DataStructures
 
-parseMovies :: String -> Movie
+parseMovies :: String -> [Movie]
 parseMovies = undefined
 --catch connection error
 
-parseActors :: String -> Actor
+parseActors :: String -> [Actor]
 parseActors = undefined
