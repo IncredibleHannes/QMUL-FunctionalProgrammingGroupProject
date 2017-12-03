@@ -44,8 +44,10 @@ movieReqURL = do
   let day = getDay date
   let mth = getMth date
   let yr = getYr date
-  return $ concat ["https://api.themoviedb.org/3/discover/movie?api_key=77a5749742a2117c0b9c739d7bad6518&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&primary_release_date.gte=", show gteYr, "-" , show gteMth, "-", show day, "&primary_release_date.lte=", show yr, "-", show mth, "-", show day]
+  return $ concat ["https://api.themoviedb.org/3/discover/movie?api_key=77a5749742a2117c0b9c739d7bad6518&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&primary_release_date.gte=", dShow gteYr, "-" , dShow gteMth, "-", dShow day, "&primary_release_date.lte=", dShow yr, "-", dShow mth, "-", dShow day]
     where yrMinus x = if x<4 then x-1 else x
+          dShow x = if x < 10 then "0" ++ show x else show x
+
 
 
 actorReqURL :: String
