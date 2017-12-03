@@ -24,7 +24,10 @@ library
   build-depends:       base >= 4.7 && < 5
                        , HDBC
                        , HDBC-sqlite3
-                       , HTTP-client
+                       , http-client
+                       , datetime
+                       , http-conduit
+                       , network-uri
   default-language:    Haskell2010
 
 
