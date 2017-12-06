@@ -22,7 +22,8 @@ module DataBaseModule
       clearDatabase,
       cleanupDatabase,
       getMoviesFromDatabase,
-      getActorsFromDatabase
+      getActorsFromDatabase,
+      getDateOfLastMoveInDB
     ) where
 
 import Database.HDBC
@@ -138,3 +139,8 @@ cleanupDatabase conn date = do
    run conn ("DELETE FROM actors WHERE NOT EXISTS (SELECT * FROM plays WHERE " ++
              "actors.actorId == plays.actorId)") []
    commit conn
+
+getDateOfLastMoveInDB :: Connection -> IO (Maybe String)
+getDateOfLastMoveInDB conn = do
+  result <- quickQuery' conn "SELECT MAX(movies.release) FROM movies" []
+  if result == [[]] then return Nothing else return $ fromSql $ head $ head result

@@ -39,7 +39,9 @@ dataBaseModuleTests = TestList [ TestLabel "Testing if the result is nothing"
                         TestLabel "Cleaning up database 2" dataBaseCleanupTest1,
                         TestLabel "Cleaning up database 3" dataBaseCleanupTest2,
                         TestLabel "Cleaning up database 4" dataBaseCleanupTest3,
-                        TestLabel "Cleaning up database 5" dataBaseCleanupTest4]
+                        TestLabel "Cleaning up database 5" dataBaseCleanupTest4,
+                        TestLabel "Getting date of the newest movie" dataBaseDateTest1,
+                        TestLabel "Getting date of the newest movie" dataBaseDateTest2]
 
 setupTest :: [Movie] -> [Actor] -> String -> String -> Maybe[Movie] -> Test
 setupTest movie actor name description expected = TestCase ( do
@@ -136,6 +138,30 @@ dataBaseCleanupTest4 = setupCleanupTest2 [Movie 1 "Doctor Who" "2016-01-01",
                          Movie 2 "Boradchurch" "2017-01-02"]]
                         "2016-02-01" "The movie schould be removed from the actore"
                         [Actor 1 "David Tennant" [Movie 2 "Boradchurch" "2017-01-02"]]
+
+dataBaseDateTest1 :: Test
+dataBaseDateTest1 = TestCase (do
+  conn <- dbConnect
+  initialiseDB conn
+  insertMovieIntoDB conn [Movie 1 "Doctor Who" "2016-03-01", Movie 2 "Boradchurch" "2017-01-02"]
+  insertActorIntoDB conn [Actor 1 "David Tennant" [Movie 1 "Doctor Who" "2016-01-01"]]
+  date1 <- getDateOfLastMoveInDB conn
+  clearDatabase conn
+  disconnectDB conn
+  assertEqual "ecpect the date of movie 1" date1 (Just "2017-01-02")
+  )
+
+dataBaseDateTest2 :: Test
+dataBaseDateTest2 = TestCase (do
+  conn <- dbConnect
+  initialiseDB conn
+  insertMovieIntoDB conn []
+  insertActorIntoDB conn []
+  date2 <- getDateOfLastMoveInDB conn
+  clearDatabase conn
+  disconnectDB conn
+  assertEqual "ecpect the date of movie 1" date2 Nothing
+  )
 
 dataStructuresTests :: Test
 dataStructuresTests     = TestList []
