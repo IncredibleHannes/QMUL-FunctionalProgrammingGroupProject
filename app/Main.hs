@@ -28,10 +28,12 @@ main :: IO ()
 main = do
   conn <- dbConnect                                         -- DataBaseModule
   _ <- initialiseDB conn                                    -- DataBaseModule
-  listOfMovies <- httpGetListOfMovies "2017-08-01"          -- HttpRequestModule
-  listofActors <- httpGetListOfActores                      -- HttpRequestModule
+  listOfMovies <- httpGetListOfMovies "2017-12-01"          -- HttpRequestModule
+  --listofActors <- httpGetListOfActores                      -- HttpRequestModule
   insertMovieIntoDB conn listOfMovies                       -- DataBaseModule
-  insertActorIntoDB conn listofActors                       -- DataBaseModule
+  movies <- getMoviesFromDatabase conn
+  print movies
+  {-insertActorIntoDB conn listofActors                       -- DataBaseModule
   actor <- askForActor                                      -- IOModule
   movies <- searchMoviesInDB conn actor                     -- DataBaseModule
   selectedMovie <- askToSelectAmovie                        -- IOModule
@@ -41,5 +43,5 @@ main = do
   printMovies movies                                        -- IOModule
   location <- askForLocation                                -- IOModule
   let listOfCinemas = httpApiCinemaRequest movie location   -- HttpRequestModule2
-  printCinemas listOfCinemas                                -- IOModule
+  printCinemas listOfCinemas                                -- IOModule-}
   disconnectDB conn                                         -- DataBaseModule

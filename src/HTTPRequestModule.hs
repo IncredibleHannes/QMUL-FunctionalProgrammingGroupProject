@@ -24,16 +24,6 @@ getMth (_, mth, _, _, _, _) = mth
 getDay :: (Integer, Int, Int, Int, Int, Int) -> Int
 getDay (_, _, day, _, _, _) = day
 
-yrMinusThree :: Integer -> Integer
-yrMinusThree x = if x <4 then x - 1 else x
-
-mthMinusThree :: Int -> Int
-mthMinusThree x
-  | x==1 = 10
-  | x==2 = 11
-  | x==3 = 12
-  | x>=4 = x - 3
-
 movieReqURL :: String -> Int -> IO String
 movieReqURL fromDate i = do
   date' <- getCurrentTime
@@ -44,16 +34,15 @@ movieReqURL fromDate i = do
                    show i, "&primary_release_date.gte=", fromDate,
                    "&primary_release_date.lte=", dShow $ getYr date, "-",
                    dShow $ getMth date, "-", dShow $ getDay date]
-    where yrMinus yr mth = if mth < 4 then yr-1 else yr
-          dShow x = if x < 10 then "0" ++ show x else show x
+    where dShow x = if x < 10 then "0" ++ show x else show x
 
 makeURI :: String -> URI
 makeURI str = fromJust $ parseURI str
 
 httpGetListOfMovies :: String -> IO [Movie]
 httpGetListOfMovies fromDate = do
-  moviesStr <- N.simpleHttp =<< movieReqURL fromDate 1
-  requestList <- mapM (N.simpleHttp <=< movieReqURL fromDate) [1..(parsePages moviesStr)]
+  pages <- fmap parsePages (N.simpleHttp =<< movieReqURL fromDate 1)
+  requestList <- mapM (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
   return $ concatMap parseMovies requestList
 
 httpGetListOfActores = undefined
