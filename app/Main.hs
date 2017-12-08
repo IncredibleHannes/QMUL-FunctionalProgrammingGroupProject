@@ -28,7 +28,7 @@ main :: IO ()
 main = do
   conn <- dbConnect                                         -- DataBaseModule
   _ <- initialiseDB conn                                    -- DataBaseModule
-  listOfMovies <- httpGetListOfMovies                       -- HttpRequestModule
+  listOfMovies <- httpGetListOfMovies "2017-08-01"          -- HttpRequestModule
   listofActors <- httpGetListOfActores                      -- HttpRequestModule
   insertMovieIntoDB conn listOfMovies                       -- DataBaseModule
   insertActorIntoDB conn listofActors                       -- DataBaseModule
