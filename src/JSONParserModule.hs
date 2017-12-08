@@ -6,23 +6,19 @@ module JSONParserModule
 
 import DataStructures
 import Data.Aeson
+import Data.Aeson.Types
 import Data.Text
 import Control.Monad
 
---parses the CinemaList array from the JSON Response
-instance FromJSON CinemaList where
-    parseJSON (Object o) = CinemaList <$> o .: "cinemas"
-    parseJSON _ = mzero
+
+parseCinema :: Value -> Parser [Cinema]
+parseCinema = withObject "parseCinema" $ \o -> o.: "cinemas"
 
 --parses the Cinema data from the JSON Response
 instance FromJSON Cinema where
     parseJSON (Object o) = Cinema <$> o .: "name" <*> o .: "id" <*> o .: "distance"
     parseJSON _ = mzero
 
---parses the Movie results array from the JSON Response
-instance FromJSON MovieList where
-    parseJSON (Object o) = MovieList <$> o .: "results"
-    parseJSON _ = mzero
 
 --parse the Movie data from the JSON Response
 instance FromJSON Movie where
@@ -30,8 +26,10 @@ instance FromJSON Movie where
     parseJSON _ = mzero
 
 
+--parseMovies :: Value -> Parser [Movie]
+--parseMovies = withObject "parseMovies" $ \o -> o.: "results"
 
-parseMovies :: String -> [Movie]
+parseMovies :: String ->  [Movie]
 parseMovies = undefined
 --catch connection error
 

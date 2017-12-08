@@ -13,16 +13,9 @@ Written by Johannes Hartmann, ec17512@qmul.ac.uk
 -}
 module DataStructures(
       Movie(Movie),
-      MovieList(MovieList),
       Actor(Actor),
-      Cinema(Cinema),
-      CinemaList(CinemaList)
+      Cinema(Cinema)
     ) where
-
-{-
-   | Data structure representing a List of movies
--}
-newtype MovieList = MovieList {movieList :: [Movie]} deriving Show
 
 {- | Data structure representig a movie. The first parameter is the ID and the
      second is the name of the movie and the third the release day -}
@@ -39,9 +32,3 @@ data Actor = Actor Int String [Movie]
      location -}
 data Cinema = Cinema String String Float
   deriving (Eq, Show)
-
-{-
-     | Data structure representing a List of cinemas
--}
-newtype CinemaList = CinemaList {cinemaList :: [Cinema]}
-  deriving Show
