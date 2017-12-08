@@ -63,7 +63,7 @@ parseMovies b = map convertMovie moviesText
 
 --catch connection error
 
-parseActors :: String -> [Actor]
+parseActors :: B.ByteString -> Movie -> [Actor]
 parseActors = undefined
 
 parseCinema :: Value -> Parser [Cinema]

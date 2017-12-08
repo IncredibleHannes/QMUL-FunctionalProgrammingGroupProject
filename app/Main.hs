@@ -24,13 +24,17 @@ import IOActionModule
 import DataStructures
 import JSONParserModule
 
+import Data.Maybe
+
 main :: IO ()
 main = do
-  conn <- dbConnect                                         -- DataBaseModule
-  _ <- initialiseDB conn                                    -- DataBaseModule
-  listOfMovies <- httpGetListOfMovies "2017-12-01"          -- HttpRequestModule
+  conn <- dbConnect
+  initialiseDB conn
+  cleanupDatabase conn "2017-12-01"
+  lastMovieDate <- getDateOfLastMoveInDB conn
+  listOfMovies <- httpGetListOfMovies $ fromMaybe "2017-12-01" lastMovieDate
   --listofActors <- httpGetListOfActores                      -- HttpRequestModule
-  insertMovieIntoDB conn listOfMovies                       -- DataBaseModule
+  insertMovieIntoDB conn listOfMovies
   movies <- getMoviesFromDatabase conn
   print movies
   {-insertActorIntoDB conn listofActors                       -- DataBaseModule

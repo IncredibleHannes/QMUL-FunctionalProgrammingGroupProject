@@ -39,10 +39,32 @@ movieReqURL fromDate i = do
 makeURI :: String -> URI
 makeURI str = fromJust $ parseURI str
 
+
+-- | returns all Movies starting from a given time string
 httpGetListOfMovies :: String -> IO [Movie]
 httpGetListOfMovies fromDate = do
   pages <- fmap parsePages (N.simpleHttp =<< movieReqURL fromDate 1)
   requestList <- mapM (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
   return $ concatMap parseMovies requestList
 
-httpGetListOfActores = undefined
+-- | returns a List of all actors playing in the given list of movies
+httpGetListOfActores :: [Movie] -> IO [Actor]
+httpGetListOfActores movies = do
+  actores <- mapM getActores movies
+  return $ concatActors actores
+
+
+getActores :: Movie -> IO [Actor]
+getActores m@(Movie movieId _ _) = do
+  actoreJSON <- N.simpleHttp (actorReqUrl movieId)
+  return $ parseActors actoreJSON m
+
+actorReqUrl :: Int -> String
+actorReqUrl id = concat [ "https://api.themoviedb.org/3/movie/", show 123,
+                          "/credits?api_key=77a5749742a2117c0b9c739d7bad6518" ]
+
+concatActors :: [[Actor]] -> [Actor]
+concatActors x = removeDups $ concat x
+  where
+    removeDups :: [Actor] -> [Actor]
+    removeDups (x:xs) = undefined
