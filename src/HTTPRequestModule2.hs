@@ -21,5 +21,4 @@ requestCinemaList loc = do
   return response
 
 httpApiCinemaRequest :: Movie -> String -> [Cinema]
-
 httpApiCinemaRequest = undefined
