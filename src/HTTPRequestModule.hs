@@ -48,6 +48,8 @@ httpGetListOfMovies fromDate = do
   requestList <- mapM (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
   return $ concatMap parseMovies requestList
 
+-- ############################### Actores #####################################
+
 -- | returns a List of all actors playing in the given list of movies
 httpGetListOfActores :: [Movie] -> IO [Actor]
 httpGetListOfActores movies = do
@@ -61,7 +63,7 @@ getActores m@(Movie movieId _ _) = do
   return $ parseActors actoreJSON m
 
 actorReqUrl :: Int -> String
-actorReqUrl id = concat [ "https://api.themoviedb.org/3/movie/", show 123,
+actorReqUrl aId = concat [ "https://api.themoviedb.org/3/movie/", show aId,
                           "/credits?api_key=77a5749742a2117c0b9c739d7bad6518" ]
 
 concatActors :: [[Actor]] -> [Actor]
