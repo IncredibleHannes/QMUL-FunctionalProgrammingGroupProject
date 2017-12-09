@@ -1,6 +1,7 @@
 module HTTPRequestModule
     ( httpGetListOfMovies,
-      httpGetListOfActores
+      httpGetListOfActores,
+      concatActors
     ) where
 
 import Data.List
@@ -67,4 +68,14 @@ concatActors :: [[Actor]] -> [Actor]
 concatActors x = removeDups $ concat x
   where
     removeDups :: [Actor] -> [Actor]
-    removeDups (x:xs) = undefined
+    removeDups [] = []
+    removeDups (x:xs) = let dups = getDups x (x:xs) in concatA (fst dups) : removeDups (snd dups)
+
+    getDups :: Actor -> [Actor] -> ([Actor], [Actor])
+    getDups _ [] = ([], [])
+    getDups a1@(Actor _ n1 _) (a2@(Actor _ n2 _) : xs) = if n1 == n2
+                                                          then (a2 : fst (getDups a1 xs), snd $ getDups a1 xs)
+                                                          else (fst $ getDups a1 xs, a2 : snd (getDups a1 xs))
+    concatA :: [Actor] -> Actor
+    concatA [a] = a
+    concatA (Actor aId1 n1 m1 : Actor aId2 n2 m2 : xs ) = concatA (Actor aId1 n1 (m1 ++ m2) : xs)

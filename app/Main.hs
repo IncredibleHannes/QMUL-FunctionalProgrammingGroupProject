@@ -32,11 +32,12 @@ main = do
   initialiseDB conn
   cleanupDatabase conn "2017-12-01"
   lastMovieDate <- getDateOfLastMoveInDB conn
-  listOfMovies <- httpGetListOfMovies $ fromMaybe "2017-12-01" lastMovieDate
-  --listofActors <- httpGetListOfActores                      -- HttpRequestModule
+  listOfMovies <- httpGetListOfMovies $ fromMaybe "2017-12-09" lastMovieDate
+  listOfActors <- httpGetListOfActores listOfMovies                    -- HttpRequestModule
   insertMovieIntoDB conn listOfMovies
   movies <- getMoviesFromDatabase conn
   print movies
+  print listOfActors
   {-insertActorIntoDB conn listofActors                       -- DataBaseModule
   actor <- askForActor                                      -- IOModule
   movies <- searchMoviesInDB conn actor                     -- DataBaseModule
