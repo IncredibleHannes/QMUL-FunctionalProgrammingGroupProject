@@ -30,7 +30,7 @@ main :: IO ()
 main = do
   conn <- dbConnect
   initialiseDB conn
-  cleanupDatabase conn "2017-12-01"
+  cleanupDatabase conn "2017-12-09"
   lastMovieDate <- getDateOfLastMoveInDB conn
   listOfMovies <- httpGetListOfMovies $ fromMaybe "2017-12-09" lastMovieDate
   listOfActors <- httpGetListOfActores listOfMovies                    -- HttpRequestModule

@@ -2,8 +2,10 @@
 
 module JSONParserModule
     (parseMovies
-    ,parseActors
+    , parseActors
     , parsePages
+    , parseCinemas
+    , parseListings
     , MovieFromJSON
     , Results
      ) where
@@ -20,30 +22,25 @@ import qualified Data.ByteString.Lazy as B
 import Data.Maybe
 import GHC.Generics
 
-data Results =
-  Results {id :: Int
-        , title :: T.Text
-        , release_date :: T.Text
-         } deriving (Show, Generic)
+-- ################################## Results #################################
+
+data Results = Results {id :: Int, title :: T.Text, release_date :: T.Text}
+  deriving (Show, Generic)
 
 instance FromJSON Results where
-   parseJSON (Object v) = Results <$>
-                          v .: "id" <*>
-                          v .: "title" <*>
-                          v .: "release_date"
+   parseJSON (Object v) = Results <$> v .: "id" <*> v .: "title" <*> v .: "release_date"
    parseJSON _ = mzero
 
 instance ToJSON Results where
    toJSON (Results id title release_date) = object ["id" .= id, "title" .= title, "release_date" .= release_date]
 
-data MovieFromJSON =
-    MovieFromJSON {results :: [Results]
-                   , pages :: Int} deriving (Show, Generic)
+-- ################################## Movie ###################################
+
+data MovieFromJSON = MovieFromJSON {results :: [Results], pages :: Int}
+  deriving (Show, Generic)
 
 instance FromJSON MovieFromJSON where
-   parseJSON (Object v) = MovieFromJSON <$>
-                           v .: "results" <*>
-                           v .: "total_pages"
+   parseJSON (Object v) = MovieFromJSON <$> v .: "results" <*> v .: "total_pages"
    parseJSON _ = mzero
 
 instance ToJSON MovieFromJSON where
@@ -53,6 +50,10 @@ parsePages :: B.ByteString -> Int
 parsePages b = pages fromJSON
    where fromJSON = fromJust $ decode b
 
+instance FromJSON Movie where
+   parseJSON (Object o) = Movie <$> o .: "id" <*> o .: "title" <*> o .: "release_date"
+   parseJSON _ = mzero
+
 convertMovie :: Results -> Movie
 convertMovie (Results i t r) = Movie i (T.unpack t) (T.unpack r)
 
@@ -61,21 +62,43 @@ parseMovies b = map convertMovie moviesText
   where fromJSON = fromJust $ decode b
         moviesText = results fromJSON
 
---catch connection error
+-- ############################### Actors ######################################
+
+data TmpActor = TmpActor Int String
+
+instance FromJSON TmpActor where
+    parseJSON (Object o) = TmpActor <$> o .: "id" <*> o .: "name"
+    parseJSON _ = mzero
 
 parseActors :: B.ByteString -> Movie -> [Actor]
-parseActors = undefined
+parseActors cn movie = map (converteTmp movie) (fromJust $ parseMaybe actorParser =<< decode cn)
+  where
+    converteTmp :: Movie -> TmpActor -> Actor
+    converteTmp movie (TmpActor aId name) = Actor aId name [movie]
 
-parseCinema :: Value -> Parser [Cinema]
-parseCinema = withObject "parseCinema" $ \o -> o.: "cinemas"
+actorParser :: Value -> Parser [TmpActor]
+actorParser = withObject "actorParser" $ \o -> o.: "cast"
+
+
+-- ################################# Cinemas ###################################
+
+instance FromJSON Listings where
+  parseJSON (Object o) = Listings <$> o .: "title"
+  parseJSON _ = mzero
+
+listingsParser :: Value -> Parser [Listings]
+listingsParser = withObject "listingsParser" $ \o -> o.: "listings"
+
+parseListings :: B.ByteString -> [Listings]
+parseListings l = fromJust $ parseMaybe listingsParser =<< decode l
 
 --parses the Cinema data from the JSON Response
 instance FromJSON Cinema where
     parseJSON (Object o) = Cinema <$> o .: "name" <*> o .: "id" <*> o .: "distance"
     parseJSON _ = mzero
 
+parseCinemas :: B.ByteString -> [Cinema]
+parseCinemas cn = fromJust $ parseMaybe cinemaParser =<< decode cn
 
---parse the Movie data from the JSON Response
-instance FromJSON Movie where
-    parseJSON (Object o) = Movie <$> o .: "id" <*> o .: "title" <*> o .: "release_date"
-    parseJSON _ = mzero
+cinemaParser :: Value -> Parser [Cinema]
+cinemaParser = withObject "cinemaParser" $ \o -> o.: "cinemas"
