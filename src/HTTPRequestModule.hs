@@ -59,8 +59,10 @@ httpGetListOfMovies = do
   moviesStr <- N.simpleHttp url
   let pages = parsePages moviesStr
   let pageList = [1..pages]
-  let movies = parseMovies moviesStr
-  return movies
+  urls <- mapM movieReqURL pageList
+  moviesBS <- mapM N.simpleHttp urls
+  let movies = map parseMovies moviesBS
+  return $ concat movies
 
 httpGetListOfActores :: IO [Actor]
 httpGetListOfActores = undefined
