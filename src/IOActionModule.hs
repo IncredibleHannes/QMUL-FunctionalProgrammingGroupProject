@@ -19,10 +19,10 @@ askForActor = do
   getLine
 
 askToSelectMovie :: IO Int
-askToSelectMovie = do
+askToSelectMovie = undefined{-do
   putStrLn "Please selecte a movie now: "
   number <- getLine
-  return (number :: Int)
+  return (number :: Int)-}
 
 printCinemas :: [Cinema] -> IO ()
 printCinemas = undefined

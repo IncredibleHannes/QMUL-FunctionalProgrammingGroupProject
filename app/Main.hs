@@ -49,7 +49,7 @@ main = do
   location <- askForLocation
   result <- handle cinemaHandle (httpGetCinemaList location)
   printCinemas result
-  
+
   disconnectDB conn
   {-
   actor <- askForActor                                      -- IOModule
