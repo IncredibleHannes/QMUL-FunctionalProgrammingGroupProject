@@ -80,7 +80,7 @@ actorParser :: Value -> Parser [TmpActor]
 actorParser = withObject "actorParser" $ \o -> o.: "cast"
 
 
--- ################################# Cinemas ###################################
+-- ################################# Listings ###################################
 
 instance FromJSON Listings where
   parseJSON (Object o) = Listings <$> o .: "title"
@@ -92,10 +92,10 @@ listingsParser = withObject "listingsParser" $ \o -> o.: "listings"
 parseListings :: B.ByteString -> [Listings]
 parseListings l = fromJust $ parseMaybe listingsParser =<< decode l
 
---parses the Cinema data from the JSON Response
+-- #################################### Cinemas ###############################
 instance FromJSON Cinema where
-    parseJSON (Object o) = Cinema <$> o .: "name" <*> o .: "id" <*> o .: "distance"
-    parseJSON _ = mzero
+  parseJSON (Object o) = Cinema <$>  o .: "id" <*> o .: "name" <*> o .: "distance"
+  parseJSON _ = mzero
 
 parseCinemas :: B.ByteString -> [Cinema]
 parseCinemas cn = fromJust $ parseMaybe cinemaParser =<< decode cn

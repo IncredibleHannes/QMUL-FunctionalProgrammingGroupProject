@@ -30,15 +30,17 @@ main :: IO ()
 main = do
   conn <- dbConnect
   initialiseDB conn
-  cleanupDatabase conn "2017-12-09"
+  cleanupDatabase conn "2017-12-06"
   lastMovieDate <- getDateOfLastMoveInDB conn
-  listOfMovies <- httpGetListOfMovies $ fromMaybe "2017-12-09" lastMovieDate
-  listOfActors <- httpGetListOfActores listOfMovies                    -- HttpRequestModule
+  listOfMovies <- httpGetListOfMovies $ fromMaybe "2017-12-07" lastMovieDate
+  listOfActors <- httpGetListOfActores listOfMovies
   insertMovieIntoDB conn listOfMovies
+  insertActorIntoDB conn listOfActors
   movies <- getMoviesFromDatabase conn
+  actors <- getActorsFromDatabase conn
   print movies
-  print listOfActors
-  {-insertActorIntoDB conn listofActors                       -- DataBaseModule
+  print actors
+  {-
   actor <- askForActor                                      -- IOModule
   movies <- searchMoviesInDB conn actor                     -- DataBaseModule
   selectedMovie <- askToSelectAmovie                        -- IOModule
