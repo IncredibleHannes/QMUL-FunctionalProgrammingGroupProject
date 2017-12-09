@@ -15,6 +15,7 @@ import Network.URI
 import Data.Maybe
 import Data.Either
 import qualified Data.ByteString.Lazy as B
+import Control.Parallel.Strategies
 
 getYr :: (Integer, Int, Int, Int, Int, Int) -> Integer
 getYr (yr, _, _, _, _, _) = yr
@@ -45,7 +46,7 @@ makeURI str = fromJust $ parseURI str
 httpGetListOfMovies :: String -> IO [Movie]
 httpGetListOfMovies fromDate = do
   pages <- fmap parsePages (N.simpleHttp =<< movieReqURL fromDate 1)
-  requestList <- mapM (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
+  requestList <- sequence $ parMap rseq (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
   return $ concatMap parseMovies requestList
 
 -- ############################### Actores #####################################
@@ -53,7 +54,7 @@ httpGetListOfMovies fromDate = do
 -- | returns a List of all actors playing in the given list of movies
 httpGetListOfActores :: [Movie] -> IO [Actor]
 httpGetListOfActores movies = do
-  actores <- mapM getActores movies
+  actores <- sequence $ parMap rseq getActores movies
   return $ concatActors actores
 
 
@@ -66,6 +67,9 @@ actorReqUrl :: Int -> String
 actorReqUrl aId = concat [ "https://api.themoviedb.org/3/movie/", show aId,
                           "/credits?api_key=77a5749742a2117c0b9c739d7bad6518" ]
 
+
+{- | hepler function that concatitates the actores so that duplicates with different
+     movies are combined together -}
 concatActors :: [[Actor]] -> [Actor]
 concatActors x = removeDups $ concat x
   where
