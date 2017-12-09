@@ -14,7 +14,8 @@ Written by Johannes Hartmann, ec17512@qmul.ac.uk
 module DataStructures(
       Movie(Movie),
       Actor(Actor),
-      Cinema(Cinema)
+      Cinema(Cinema),
+      Listings(Listings)
     ) where
 
 
@@ -31,4 +32,7 @@ data Actor = Actor Int String [Movie]
      second is the name of the cinema and the third is the range to the given
      location -}
 data Cinema = Cinema String String Float
+  deriving (Eq, Show)
+
+data Listings = Listings String
   deriving (Eq, Show)
