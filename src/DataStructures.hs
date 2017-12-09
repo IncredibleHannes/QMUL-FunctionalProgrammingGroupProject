@@ -27,7 +27,10 @@ import Control.Monad
 {- | Data structure representig a movie. The first parameter is the ID and the
      second is the name of the movie and the third the release day -}
 data Movie = Movie { movieId :: Int, title :: String, releaseDate :: String }
-  deriving (Eq, Show)
+  deriving (Eq)
+
+instance Show Movie where
+  show (Movie _ title _) = title
 
 {- | Data structure representig a actor. The first parameter is the ID, the
      second is the name of the actor and the third are all movies he plays in -}
