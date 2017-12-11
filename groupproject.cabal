@@ -2,12 +2,12 @@ name:                groupproject
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/githubuser/groupproject#readme
-license:             BSD3
+homepage:            https://github.com/IncredibleHannes/QMUL-FunctionalProgrammingGroupProject#readme
+license:             MIT
 license-file:        LICENSE
-author:              Author name here
+author:              Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
 maintainer:          example@example.com
-copyright:           2017 Author name here
+copyright:           2017 Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md
@@ -25,11 +25,13 @@ library
                        , HDBC
                        , HDBC-sqlite3
                        , http-client
-                       , network-uri
+                       , datetime
                        , http-conduit
+                       , network-uri
                        , aeson
                        , text
                        , bytestring
+                       , parallel
   default-language:    Haskell2010
 
 
@@ -39,6 +41,7 @@ executable groupproject-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , groupproject
+                     , http-conduit
   default-language:    Haskell2010
 
 test-suite groupproject-test
@@ -53,4 +56,4 @@ test-suite groupproject-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/groupproject
+  location: https://github.com/IncredibleHannes/QMUL-FunctionalProgrammingGroupProject

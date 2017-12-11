@@ -9,18 +9,18 @@
 
 This module handles all database related parts of this application.
 
-Written by Johannes Hartmann, ec17512@qmul.ac.uk
+Written by Johannes Hartmann
 -}
 
 module DataBaseModule
     ( dbConnect,
       initialiseDB,
+      clearDatabase,
+      cleanupDatabase,
+      disconnectDB,
       insertMovieIntoDB,
       insertActorIntoDB,
       searchMoviesInDB,
-      disconnectDB,
-      clearDatabase,
-      cleanupDatabase,
       getMoviesFromDatabase,
       getActorsFromDatabase,
       getDateOfLastMoveInDB
@@ -71,7 +71,8 @@ insertActorIntoDB conn actores = do
     executeMany stmt actoresArgs
     -- creating plays table
     let f (Actor actorId n [])     = []
-        f (Actor actorId n (Movie movieId _ _ : xs)) = [toSql actorId, toSql movieId]  : f (Actor actorId n xs)
+        f (Actor actorId n (Movie movieId _ _ : xs)) = [toSql actorId, toSql movieId]
+                                                       : f (Actor actorId n xs)
     let playsArgs = concatMap f actores
     stmt <- prepare conn "INSERT INTO plays VALUES (?, ?)"
     executeMany stmt playsArgs
@@ -121,10 +122,11 @@ getActorsFromDatabase conn = do
   result2 <- mapM (\x -> quickQuery' conn ("SELECT movies.* FROM movies, plays " ++
               "WHERE ? = plays.actorId AND plays.movieId = movies.movieId") [x]) ids
   let finalResult = zip result result2
-  return $ map (\x -> Actor (fromSql $ head $ fst x) (fromSql $ fst x !! 1) (map parseMovie (snd x))) finalResult
-
-parseMovie :: [SqlValue] -> Movie
-parseMovie x = Movie (fromSql $ head x) (fromSql $ x !! 1) (fromSql $ x !! 2)
+  return $ map (\x -> Actor (fromSql $ head $ fst x) (fromSql $ fst x !! 1)
+    (map parseMovie (snd x))) finalResult
+    where
+      parseMovie :: [SqlValue] -> Movie
+      parseMovie x = Movie (fromSql $ head x) (fromSql $ x !! 1) (fromSql $ x !! 2)
 
 {- | removes all movies bevor a given date and deals with inonsistent states in the
      database after the deletion of a movie-}
@@ -140,6 +142,7 @@ cleanupDatabase conn date = do
              "actors.actorId == plays.actorId)") []
    commit conn
 
+-- | returns the date of the newest movie in the Database
 getDateOfLastMoveInDB :: Connection -> IO (Maybe String)
 getDateOfLastMoveInDB conn = do
   result <- quickQuery' conn "SELECT MAX(movies.release) FROM movies" []
