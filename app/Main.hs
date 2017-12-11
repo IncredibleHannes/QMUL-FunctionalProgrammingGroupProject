@@ -28,17 +28,17 @@ import Data.Maybe
 import Control.Exception
 import Control.Monad
 import qualified Network.HTTP.Conduit as N
+import Data.DateTime
 
 run :: IO ()
 run = do
   conn <- dbConnect
   initialiseDB conn
-  --cleanupDatabase conn "2017-11-01"
+  cleanupDatabase conn "2017-09-15"
   lastMovieDate <- getDateOfLastMoveInDB conn
-
   let movieHandle = (\e -> return []) :: N.HttpException -> IO [Movie]
   listOfMovies <- handle movieHandle
-                  (httpGetListOfMovies $ fromMaybe "2017-11-12" lastMovieDate)
+                  (httpGetListOfMovies $ fromMaybe "2017-11-15" lastMovieDate)
   let actorHandle = (\e -> return []) :: N.HttpException -> IO [Actor]
   listOfActors <- handle actorHandle (httpGetListOfActores listOfMovies)
   insertMovieIntoDB conn listOfMovies
