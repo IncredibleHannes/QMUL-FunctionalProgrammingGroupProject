@@ -52,14 +52,15 @@ run = do
       error "Could't find a movie for the given actor"
     Just x -> printMovies x
   movieIndex <- askToSelectMovie
-  when (movieIndex > length (fromJust movie)) $ disconnectDB conn >>= error "Wrong Input"
+  when (movieIndex > length (fromJust movie)) $ disconnectDB conn
+    >>= error "Wrong Input"
   location <- askForLocation
   let cinemaHandle = (\e -> disconnectDB conn >>= error "No cinema found for your location") :: N.HttpException -> IO [Cinema]
   cinemas <- handle cinemaHandle (httpGetCinemaList location)
   let cinema2Handle = (\e -> disconnectDB conn >>= error "No cinema found that plays your movie") :: N.HttpException -> IO [Cinema]
-  filteredCinemas <- handle cinema2Handle (httpApiCinemaRequest (fromJust movie !! (movieIndex - 1)) cinemas)
+  filteredCinemas <- handle cinema2Handle (httpApiCinemaRequest
+    (fromJust movie !! (movieIndex - 1)) cinemas)
   printCinemas filteredCinemas
-
   disconnectDB conn
 
 main :: IO ()

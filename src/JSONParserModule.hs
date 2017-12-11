@@ -38,7 +38,7 @@ import GHC.Generics
 
 -- ################################## Results #################################
 
-data Results = Results {id :: Int, title :: T.Text, release_date :: T.Text}
+data Results = Results {id :: Int, title :: T.Text, releaseDate :: T.Text}
   deriving (Show, Generic)
 
 instance FromJSON Results where
@@ -85,7 +85,7 @@ instance FromJSON TmpActor where
     parseJSON _ = mzero
 
 parseActors :: B.ByteString -> Movie -> [Actor]
-parseActors cn movie = map (converteTmp movie) (fromJust $ parseMaybe actorParser =<< decode cn)
+parseActors cn movie = map (converteTmp movie) (fromMaybe [] (parseMaybe actorParser =<< decode cn))
   where
     converteTmp :: Movie -> TmpActor -> Actor
     converteTmp movie (TmpActor aId name) = Actor aId name [movie]
@@ -110,7 +110,7 @@ instance FromJSON Cinema where
   parseJSON _ = mzero
 
 parseCinemas :: B.ByteString -> [Cinema]
-parseCinemas cn = fromJust $ parseMaybe cinemaParser =<< decode cn
+parseCinemas cn = fromMaybe [] (parseMaybe cinemaParser =<< decode cn)
 
 cinemaParser :: Value -> Parser [Cinema]
 cinemaParser = withObject "cinemaParser" $ \o -> o.: "cinemas"
