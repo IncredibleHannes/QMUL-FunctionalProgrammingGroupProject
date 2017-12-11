@@ -1,3 +1,17 @@
+{- |
+   Module     : JSONParserModule
+   Copyright  : Copyright (C) 2017  Liam Kelly, Manuel Campos Villarreal, Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+This module takes care of the json parsing for each http module
+
+Written by Liam Kelly, Manuel Campos Villarreal, Johannes Hartmann
+-}
+
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 
 module JSONParserModule
@@ -44,7 +58,7 @@ instance FromJSON MovieFromJSON where
    parseJSON _ = mzero
 
 instance ToJSON MovieFromJSON where
-	toJSON (MovieFromJSON results pages) = object ["results" .= results, "total_pages" .= pages]
+  toJSON (MovieFromJSON results pages) = object ["results" .= results, "total_pages" .= pages]
 
 parsePages :: B.ByteString -> Int
 parsePages b = pages fromJSON

@@ -9,7 +9,7 @@
 
 This module handles all database related parts of this application.
 
-Written by Johannes Hartmann, ec17512@qmul.ac.uk
+Written by Johannes Hartmann
 -}
 
 module DataBaseModule

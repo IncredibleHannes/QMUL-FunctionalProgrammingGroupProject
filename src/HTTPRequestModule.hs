@@ -1,7 +1,19 @@
+{- |
+   Module     : HTTPRequestModule
+   Copyright  : Copyright (C) 2017 Liam Kelly, Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+Datatypes used in the application.
+
+Written by  Liam Kelly, Johannes Hartmann
+-}
 module HTTPRequestModule
     ( httpGetListOfMovies,
-      httpGetListOfActores,
-      concatActors
+      httpGetListOfActores
     ) where
 
 import Data.List

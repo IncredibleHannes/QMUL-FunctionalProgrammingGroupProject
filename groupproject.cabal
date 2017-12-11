@@ -41,6 +41,7 @@ executable groupproject-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , groupproject
+                     , http-conduit
   default-language:    Haskell2010
 
 test-suite groupproject-test

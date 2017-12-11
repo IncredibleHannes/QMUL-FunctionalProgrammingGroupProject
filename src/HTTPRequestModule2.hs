@@ -1,3 +1,16 @@
+{- |
+   Module     : HTTPRequestModule2
+   Copyright  : Copyright (C) 2017 Manuel Campos Villarreal, Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+Datatypes used in the application.
+
+Written by  Manuel Campos Villarreal, Johannes Hartmann
+-}
 module HTTPRequestModule2
     ( httpGetCinemaList,
       httpApiCinemaRequest,

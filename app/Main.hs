@@ -1,6 +1,6 @@
 {- |
    Module     : Main
-   Copyright  : Copyright (C) 2017 Johannes Hartmann
+   Copyright  : Copyright (C) 2017 Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
    License    : MIT
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
@@ -12,7 +12,7 @@ stores it into a SQLite database. The user types in an actor and this applicatio
 is looking this actor up and print out all movies he's playing in. For a given
 location it suggests cinemas in the areas that play this movie.
 
-Written by Johannes Hartmann, ec17512@qmul.ac.uk
+Written by Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
 -}
 
 module Main where

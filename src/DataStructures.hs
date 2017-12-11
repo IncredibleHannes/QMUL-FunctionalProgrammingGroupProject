@@ -1,6 +1,6 @@
 {- |
    Module     : DataStructures
-   Copyright  : Copyright (C) 2017 Johannes Hartmann
+   Copyright  : Copyright (C) 2017 Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
    License    : MIT
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
@@ -9,7 +9,7 @@
 
 Datatypes used in the application.
 
-Written by Johannes Hartmann, ec17512@qmul.ac.uk
+Written by Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
 -}
 module DataStructures(
       Movie(Movie),

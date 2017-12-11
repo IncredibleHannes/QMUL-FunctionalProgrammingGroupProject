@@ -1,3 +1,17 @@
+{- |
+   Module     :IOActionModule
+   Copyright  : Copyright (C) 2017 Johannes Hartmann
+   License    : MIT
+
+   Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
+   Stability  : provisional
+   Portability: portable
+
+This module provides all functions that handles user interaction
+
+Written by Johannes Hartmann
+-}
+
 module IOActionModule
     ( askForLocation,
       askForActor,
