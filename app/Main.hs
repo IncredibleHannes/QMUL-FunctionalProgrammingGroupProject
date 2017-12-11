@@ -26,40 +26,43 @@ import JSONParserModule
 
 import Data.Maybe
 import Control.Exception
+import Control.Monad
 import qualified Network.HTTP.Conduit as N
 
-main :: IO ()
-main = do
+run :: IO ()
+run = do
   conn <- dbConnect
   initialiseDB conn
-  cleanupDatabase conn "2017-12-06"
+  --cleanupDatabase conn "2017-11-01"
   lastMovieDate <- getDateOfLastMoveInDB conn
 
   let movieHandle = (\e -> return []) :: N.HttpException -> IO [Movie]
   listOfMovies <- handle movieHandle
-                  (httpGetListOfMovies $ fromMaybe "2017-12-07" lastMovieDate)
+                  (httpGetListOfMovies $ fromMaybe "2017-11-12" lastMovieDate)
   let actorHandle = (\e -> return []) :: N.HttpException -> IO [Actor]
   listOfActors <- handle actorHandle (httpGetListOfActores listOfMovies)
   insertMovieIntoDB conn listOfMovies
   insertActorIntoDB conn listOfActors
+  movies <- getMoviesFromDatabase conn
   actoreName <- askForActor
   movie <- searchMoviesInDB conn actoreName
-  printMovies movie
-  let cinemaHandle = (\e -> return []) :: N.HttpException -> IO [Cinema]
+  case movie of
+    Nothing -> do
+      disconnectDB conn
+      error "Could't find a movie for the given actor"
+    Just x -> printMovies x
+  movieIndex <- askToSelectMovie
+  when (movieIndex > length (fromJust movie)) $ disconnectDB conn >>= error "Wrong Input"
   location <- askForLocation
-  result <- handle cinemaHandle (httpGetCinemaList location)
-  printCinemas result
+  let cinemaHandle = (\e -> disconnectDB conn >>= error "No cinema found for your location") :: N.HttpException -> IO [Cinema]
+  cinemas <- handle cinemaHandle (httpGetCinemaList location)
+  let cinema2Handle = (\e -> disconnectDB conn >>= error "No cinema found that plays your movie") :: N.HttpException -> IO [Cinema]
+  filteredCinemas <- handle cinema2Handle (httpApiCinemaRequest (fromJust movie !! (movieIndex - 1)) cinemas)
+  printCinemas filteredCinemas
 
   disconnectDB conn
-  {-
-  actor <- askForActor                                      -- IOModule
-  movies <- searchMoviesInDB conn actor                     -- DataBaseModule
-  selectedMovie <- askToSelectAmovie                        -- IOModule
-  let movie = case movies of
-                Nothing -> error ""
-                Just m  -> m !! selectedMovie
-  printMovies movies                                        -- IOModule
-  location <- askForLocation                                -- IOModule
-  let listOfCinemas = httpApiCinemaRequest movie location   -- HttpRequestModule2
-  printCinemas listOfCinemas                                -- IOModule
-  disconnectDB conn   -}                                      -- DataBaseModule
+
+main :: IO ()
+main = do
+  let mainHandler = (print . takeWhile (/= '\n') . show) :: SomeException -> IO ()
+  handle mainHandler run

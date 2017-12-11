@@ -19,17 +19,22 @@ askForActor = do
   getLine
 
 askToSelectMovie :: IO Int
-askToSelectMovie = undefined{-do
+askToSelectMovie = do
   putStrLn "Please selecte a movie now: "
-  number <- getLine
-  return (number :: Int)-}
+  readLn
 
 printCinemas :: [Cinema] -> IO ()
-printCinemas = undefined
+printCinemas c = do
+  putStrLn "The following cinemas in your area show this film: "
+  printCinemas' c
+    where
+      printCinemas' []     = return ()
+      printCinemas' (x:xs) = do
+        print x
+        printCinemas' xs
 
-printMovies :: Maybe [Movie] -> IO()
-printMovies Nothing  = error "Could't find a movie for the given actore"
-printMovies (Just x) = do
+printMovies :: [Movie] -> IO()
+printMovies x = do
   putStrLn "The given actor plays in the following movies"
   printMoviesHelper x 1
     where

@@ -15,7 +15,7 @@ module DataStructures(
       Movie(Movie),
       Actor(Actor),
       Cinema(Cinema),
-      Listings(Listings)
+      Movie2(Movie2)
     ) where
 
 import Data.Aeson
@@ -32,6 +32,10 @@ data Movie = Movie { movieId :: Int, title :: String, releaseDate :: String }
 instance Show Movie where
   show (Movie _ title _) = title
 
+{- | Data structure representing a Movie from the second API  -}
+newtype Movie2 = Movie2 { movieTitle :: String }
+  deriving (Eq, Show)
+
 {- | Data structure representig a actor. The first parameter is the ID, the
      second is the name of the actor and the third are all movies he plays in -}
      -- maybe use list of mio
@@ -42,7 +46,7 @@ data Actor = Actor { actorId :: Int, actorName :: String, movie :: [Movie]}
      second is the name of the cinema and the third is the range to the given
      location -}
 data Cinema = Cinema { cinemaId :: String, cinemaName :: String, distance :: Float }
-  deriving (Eq, Show)
+  deriving (Eq)
 
-data Listings = Listings String
-  deriving (Eq, Show)
+instance Show Cinema where
+  show (Cinema _ title distance) = "Cinema: \"" ++  title ++ "\" Distance: " ++ show distance

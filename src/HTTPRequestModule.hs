@@ -15,7 +15,7 @@ import Network.URI
 import Data.Maybe
 import Data.Either
 import qualified Data.ByteString.Lazy as B
-import Control.Parallel.Strategies
+import Control.Exception
 
 getYr :: (Integer, Int, Int, Int, Int, Int) -> Integer
 getYr (yr, _, _, _, _, _) = yr
@@ -33,7 +33,7 @@ movieReqURL fromDate i = do
   return $ concat ["https://api.themoviedb.org/3/discover/movie?api_key=",
                    "77a5749742a2117c0b9c739d7bad6518&language=en-US&sort_by=",
                    "popularity.desc&include_adult=false&include_video=false&page=",
-                   show i, "&primary_release_date.gte=", fromDate,
+                   show i, "&region=US&primary_release_date.gte=", fromDate,
                    "&primary_release_date.lte=", dShow $ getYr date, "-",
                    dShow $ getMth date, "-", dShow $ getDay date]
     where dShow x = if x < 10 then "0" ++ show x else show x
@@ -46,7 +46,7 @@ makeURI str = fromJust $ parseURI str
 httpGetListOfMovies :: String -> IO [Movie]
 httpGetListOfMovies fromDate = do
   pages <- fmap parsePages (N.simpleHttp =<< movieReqURL fromDate 1)
-  requestList <- sequence $ parMap rseq (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
+  requestList <- mapM (N.simpleHttp <=< movieReqURL fromDate) [1..pages]
   return $ concatMap parseMovies requestList
 
 -- ############################### Actores #####################################
@@ -54,13 +54,14 @@ httpGetListOfMovies fromDate = do
 -- | returns a List of all actors playing in the given list of movies
 httpGetListOfActores :: [Movie] -> IO [Actor]
 httpGetListOfActores movies = do
-  actores <- sequence $ parMap rseq getActores movies
+  actores <- mapM getActores movies
   return $ concatActors actores
 
 
 getActores :: Movie -> IO [Actor]
 getActores m@(Movie movieId _ _) = do
-  actoreJSON <- N.simpleHttp (actorReqUrl movieId)
+  let actorHandle = (\e -> return B.empty) :: N.HttpException -> IO B.ByteString
+  actoreJSON <- handle actorHandle (N.simpleHttp (actorReqUrl movieId))
   return $ parseActors actoreJSON m
 
 actorReqUrl :: Int -> String

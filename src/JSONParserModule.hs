@@ -5,7 +5,7 @@ module JSONParserModule
     , parseActors
     , parsePages
     , parseCinemas
-    , parseListings
+    , parseMovies2
     , MovieFromJSON
     , Results
      ) where
@@ -79,18 +79,16 @@ parseActors cn movie = map (converteTmp movie) (fromJust $ parseMaybe actorParse
 actorParser :: Value -> Parser [TmpActor]
 actorParser = withObject "actorParser" $ \o -> o.: "cast"
 
-
--- ################################# Listings ###################################
-
-instance FromJSON Listings where
-  parseJSON (Object o) = Listings <$> o .: "title"
+-- ################################# Movie2 ####################################
+instance FromJSON Movie2 where
+  parseJSON (Object o) = Movie2 <$>  o .: "title"
   parseJSON _ = mzero
 
-listingsParser :: Value -> Parser [Listings]
-listingsParser = withObject "listingsParser" $ \o -> o.: "listings"
+parseMovies2 :: B.ByteString -> [Movie2]
+parseMovies2 m = fromMaybe [] (parseMaybe movies2Parser =<< decode m)
 
-parseListings :: B.ByteString -> [Listings]
-parseListings l = fromJust $ parseMaybe listingsParser =<< decode l
+movies2Parser :: Value -> Parser [Movie2]
+movies2Parser = withObject "movies2Parser" $ \o -> o.: "listings"
 
 -- #################################### Cinemas ###############################
 instance FromJSON Cinema where
