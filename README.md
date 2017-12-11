@@ -35,6 +35,10 @@ To execute:
 Note: If you run the programm for the first type, it may take a while. The programm
 has to download all movies and store the into the database.
 
+## Haddoc
+The haddoc documentation can be found at:
+https://incrediblehannes.github.io/QMUL-FunctionalProgrammingGroupProject/index.html
+
 ## Used API's
 [1] https://www.themoviedb.org/documentation/api
 
