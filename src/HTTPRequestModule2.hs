@@ -5,7 +5,7 @@
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
    Stability  : provisional
-   Portability: portable
+   Portability: stable
 
 This module provides all neccesary methodes to look up a all cinemas that plays
 a given movie in a given area

@@ -4,7 +4,7 @@
    License    : MIT
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
-   Stability  : provisional
+   Stability  : stable
    Portability: portable
 
 Datatypes used in the application.
@@ -18,7 +18,6 @@ module DataStructures(
       Movie2(Movie2)
     ) where
 
-import Data.Aeson
 import Data.Functor
 import Data.ByteString.Lazy
 import Control.Applicative

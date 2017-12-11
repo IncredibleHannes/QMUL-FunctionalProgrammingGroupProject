@@ -5,7 +5,7 @@
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
    Stability  : provisional
-   Portability: portable
+   Portability: stable
 
 This module takes care of the json parsing for each http module
 

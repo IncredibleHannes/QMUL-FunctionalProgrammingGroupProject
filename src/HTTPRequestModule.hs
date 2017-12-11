@@ -5,7 +5,7 @@
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
    Stability  : provisional
-   Portability: portable
+   Portability: stable
 
 This module provides all methodes neccesary for fillig the datanase with movies
 and actores

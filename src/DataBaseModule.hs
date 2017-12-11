@@ -4,7 +4,7 @@
    License    : MIT
 
    Maintainer : Johannes Hartmann <ec17512@qmul.ac.uk>
-   Stability  : provisional
+   Stability  : stable
    Portability: portable
 
 This module handles all database related parts of this application.
