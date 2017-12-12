@@ -48,9 +48,9 @@ older than six months will be deleted from the database to save disk space.
 
 ## Team
 The team for this project consists of thre master students at Queen Mary University London:   
-Johannes Hartmann [Github Profile] (https://github.com/IncredibleHannes)   
-Liam Kelly [Github Profile] (https://github.com/liamsscreenname)   
-Manuel Campos Villarreal [Github Profile] (https://github.com/cvmanuel)
+Johannes Hartmann [Github Profile](https://github.com/IncredibleHannes)   
+Liam Kelly [Github Profile](https://github.com/liamsscreenname)   
+Manuel Campos Villarreal [Github Profile](https://github.com/cvmanuel)
 
 
 ## Haddoc
