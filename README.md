@@ -37,7 +37,7 @@ have to be downloaded and stored into the database.
 
 ## Tests
 This application provides a set of tests. To run the tests execute `stack test`
-in the main folder. 
+in the main folder.
 
 Note: The tests are cleaning the database. If you run the program again, every
 movie have to be downloaded again.
@@ -45,6 +45,13 @@ movie have to be downloaded again.
 ## Database cleanup
 By default only the movies of the last thwo months will be downloaded. Further all movies
 older than six months will be deleted from the database to save disk space.
+
+## Team
+The team for this project consists of thre master students at Queen Mary University London:   
+Johannes Hartmann [Github Profile] (https://github.com/IncredibleHannes)   
+Liam Kelly [Github Profile] (https://github.com/liamsscreenname)   
+Manuel Campos Villarreal [Github Profile] (https://github.com/cvmanuel)
+
 
 ## Haddoc
 The haddoc documentation can be found at:
