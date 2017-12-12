@@ -26,10 +26,10 @@ module DataBaseModule
       getDateOfLastMoveInDB
     ) where
 
+import DataStructures
+
 import Database.HDBC
 import Database.HDBC.Sqlite3
-import Data.List
-import DataStructures
 import Control.Monad
 
 -- | Establishes the connection to our movie database

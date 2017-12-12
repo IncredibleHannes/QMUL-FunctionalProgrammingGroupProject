@@ -12,7 +12,7 @@ This module takes care of the json parsing for each http module
 Written by Liam Kelly, Manuel Campos Villarreal, Johannes Hartmann
 -}
 
-{-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module JSONParserModule
     (parseMovies
@@ -26,19 +26,15 @@ import DataStructures
 
 import Data.Aeson
 import Data.Aeson.Types
-import qualified Data.Text as T
-import Data.Functor
-import Control.Applicative
 import Control.Monad
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
-import GHC.Generics
 
 
 -- ################################## Results #################################
 
 data Results = Results {id :: Int, title :: String, releaseDate :: String}
-  deriving (Show, Generic)
+  deriving (Show)
 
 instance FromJSON Results where
    parseJSON (Object v) = Results <$> v .: "id" <*> v .: "title" <*> v .: "release_date"
@@ -47,7 +43,7 @@ instance FromJSON Results where
 -- ################################## Results ##################################
 
 data MovieFromJSON = MovieFromJSON {results :: [Results], pages :: Int}
-  deriving (Show, Generic)
+  deriving (Show)
 
 instance FromJSON MovieFromJSON where
    parseJSON (Object v) = MovieFromJSON <$> v .: "results" <*> v .: "total_pages"

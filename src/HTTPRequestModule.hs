@@ -25,9 +25,6 @@ import JSONParserModule
 
 import qualified Network.HTTP.Conduit as N
 import Data.DateTime
-import Network.URI
-import Data.Maybe
-import Data.Either
 import qualified Data.ByteString.Lazy as B
 import Control.Exception
 
@@ -88,7 +85,7 @@ concatActors x = removeDups $ concat x
     removeDups :: [Actor] -> [Actor]
     removeDups []     = []
     removeDups (x:xs) = let dups = getDups x (x:xs) in concatA (fst dups) : removeDups (snd dups)
-    
+
     getDups :: Actor -> [Actor] -> ([Actor], [Actor])
     getDups _ []                                       = ([], [])
     getDups a1@(Actor _ n1 _) (a2@(Actor _ n2 _) : xs) = if n1 == n2

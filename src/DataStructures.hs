@@ -18,11 +18,6 @@ module DataStructures(
       Movie2(Movie2)
     ) where
 
-import Data.Functor
-import Data.ByteString.Lazy
-import Control.Applicative
-import Control.Monad
-
 {- | Data structure representig a movie. The first parameter is the ID and the
      second is the name of the movie and the third the release day -}
 data Movie = Movie { movieId :: Int, title :: String, releaseDate :: String }
