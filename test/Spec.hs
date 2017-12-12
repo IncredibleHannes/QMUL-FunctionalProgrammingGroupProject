@@ -19,6 +19,7 @@ import Test.HUnit
 import DataBaseModule
 import DataStructures
 import JSONParserModule
+import HTTPRequestModule
 import HTTPRequestModule2
 import qualified Data.ByteString.Lazy as B
 
@@ -26,6 +27,7 @@ main :: IO Counts
 main = do
   runTestTT dataBaseModuleTests
   runTestTT jsonParserModuleTests
+  runTestTT httpModuleTests
   runTestTT httpModule2Tests
 
 -- #############################################################################
@@ -315,6 +317,34 @@ jsonCinemaParserTest3 = jsonParserTestGenerator parseCinemas
                           "Should get an error and return a empty list as default value"
                           []
 
+-- #############################################################################
+-- ############################ HttpModule2 Tests###############################
+-- #############################################################################
+httpModuleTests :: Test
+httpModuleTests = TestList
+  [ TestLabel "Should return an empty list" httpModuleActorListTest1,
+    TestLabel "Should return an empty list" httpModuleActorListTest2 ]
+
+httpModuleActorListTest1 :: Test
+httpModuleActorListTest1 = TestCase (do
+  actoreList <- httpGetListOfActores []
+  assertEqual "Should be emptylist" [] actoreList
+ )
+
+httpModuleActorListTest2 :: Test
+httpModuleActorListTest2 = TestCase (do
+  actoreList <- httpGetListOfActores [Movie 1 "TestMovie" "2017-12-12"]
+  assertEqual "Should be emptylist" [] actoreList
+ )
+
+{- this test actually works but has to much actors to it would be to long
+httpModuleActorListTest3 :: Test
+httpModuleActorListTest3 = TestCase (do
+  actoreList <- httpGetListOfActores [Movie 371638 "The Disaster Artist" "2017-12-01"]
+  assertEqual "Should return all actores of The disaster Artist"
+   [ Bunch of actores]
+   actoreList
+ )-}
 -- #############################################################################
 -- ############################ HttpModule2 Tests###############################
 -- #############################################################################
