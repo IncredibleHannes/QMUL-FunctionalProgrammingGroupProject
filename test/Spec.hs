@@ -20,33 +20,29 @@ import DataBaseModule
 import DataStructures
 import JSONParserModule
 import qualified Data.ByteString.Lazy as B
-import Data.ByteString.Char8 as C8 (pack)
 
 main :: IO Counts
 main = do
-  _ <- runTestTT dataBaseModuleTests
-  _ <- runTestTT dataStructuresTests
-  _ <- runTestTT httpRequestModuleTests
-  _ <- runTestTT httpRequestModule2Tests
-  _ <- runTestTT ioActionModuleTests
+  runTestTT dataBaseModuleTests
   runTestTT jsonParserModuleTests
 
-
+-- #############################################################################
+-- ############################# Database Tests#################################
+-- #############################################################################
 dataBaseModuleTests :: Test
-dataBaseModuleTests = TestList [ TestLabel "Testing if the result is nothing"
-                        dataBaseTest,
-                        TestLabel "Testing the database module" dataBaseTest2,
-                        TestLabel "More complex test of the database module"
-                        dataBaseTest3,
-                        TestLabel "Trying a inconsistent database" dataBaseTest4,
-                        TestLabel "Trying a inconsistent database" dataBaseTest5,
-                        TestLabel "Cleaning up database 1" dataBaseCleanupTest,
-                        TestLabel "Cleaning up database 2" dataBaseCleanupTest1,
-                        TestLabel "Cleaning up database 3" dataBaseCleanupTest2,
-                        TestLabel "Cleaning up database 4" dataBaseCleanupTest3,
-                        TestLabel "Cleaning up database 5" dataBaseCleanupTest4,
-                        TestLabel "Getting date of the newest movie" dataBaseDateTest1,
-                        TestLabel "Getting date of the newest movie" dataBaseDateTest2]
+dataBaseModuleTests = TestList
+  [ TestLabel "Testing if the result is nothing" dataBaseTest,
+    TestLabel "Testing the database module" dataBaseTest2,
+    TestLabel "More complex test of the database module" dataBaseTest3,
+    TestLabel "Trying a inconsistent database" dataBaseTest4,
+    TestLabel "Trying a inconsistent database" dataBaseTest5,
+    TestLabel "Cleaning up database 1" dataBaseCleanupTest,
+    TestLabel "Cleaning up database 2" dataBaseCleanupTest1,
+    TestLabel "Cleaning up database 3" dataBaseCleanupTest2,
+    TestLabel "Cleaning up database 4" dataBaseCleanupTest3,
+    TestLabel "Cleaning up database 5" dataBaseCleanupTest4,
+    TestLabel "Getting date of the newest movie" dataBaseDateTest1,
+    TestLabel "Getting date of the newest movie" dataBaseDateTest2 ]
 
 setupTest :: [Movie] -> [Actor] -> String -> String -> Maybe[Movie] -> Test
 setupTest movie actor name description expected = TestCase ( do
@@ -65,32 +61,33 @@ dataBaseTest = setupTest [] [] "test" "Shouldn fine a movie" Nothing
 
 
 dataBaseTest2 :: Test
-dataBaseTest2 = setupTest [ Movie 1 "Movie" "2017-07-30" ] [ Actor 1 "Johannes"
-                  [ Movie 1 "Movie" "2017-07-30" ] ]
-                  "Johannes" "Should find a movie" (Just
-                  [ Movie 1 "Movie" "2017-07-30" ])
+dataBaseTest2 = setupTest
+ [ Movie 1 "Movie" "2017-07-30" ] [ Actor 1 "Johannes" [ Movie 1 "Movie" "2017-07-30" ] ]
+ "Johannes" "Should find a movie" (Just [ Movie 1 "Movie" "2017-07-30" ])
 
 dataBaseTest3 :: Test
-dataBaseTest3 = setupTest [ Movie 1 "Doctor Who" "2017-07-30",
-                            Movie 2 "Lord of the Rings" "2017-07-30",
-                            Movie 3 "Star Wars" "2017-07-30" ]
-                  [ Actor 1 "Johannes" [ Movie 1 "Doctor Who" "2017-07-30",
-                      Movie 2 "Lord of the Rings" "2017-07-30",
-                      Movie 3 "Star Wars" "2017-07-30" ],
-                    Actor 2 "Manuel" [ Movie 1 "Doctor Who" "2017-07-30"],
-                    Actor 3 "Liam" [] ]
-                  "Johannes" "Should find tree a movies"
-                  (Just [ Movie 1 "Doctor Who" "2017-07-30",
-                          Movie 2 "Lord of the Rings" "2017-07-30",
-                          Movie 3 "Star Wars" "2017-07-30" ])
+dataBaseTest3 = setupTest
+  [ Movie 1 "Doctor Who" "2017-07-30", Movie 2 "Lord of the Rings" "2017-07-30",
+    Movie 3 "Star Wars" "2017-07-30" ]
+  [ Actor 1 "Johannes" [ Movie 1 "Doctor Who" "2017-07-30",
+                         Movie 2 "Lord of the Rings" "2017-07-30",
+                         Movie 3 "Star Wars" "2017-07-30" ],
+
+    Actor 2 "Manuel" [ Movie 1 "Doctor Who" "2017-07-30"],
+    Actor 3 "Liam" [] ]
+  "Johannes" "Should find tree a movies"
+  (Just [ Movie 1 "Doctor Who" "2017-07-30", Movie 2 "Lord of the Rings" "2017-07-30",
+          Movie 3 "Star Wars" "2017-07-30" ])
 
 dataBaseTest4 :: Test
-dataBaseTest4 = setupTest [] [ Actor 1 "Clara Oswald" [ Movie 1 "Doctor Who" "2017-07-30" ]]
-                  "Clara Oswald" "Should return Nothig" Nothing
+dataBaseTest4 = setupTest
+  [] [ Actor 1 "Clara Oswald" [ Movie 1 "Doctor Who" "2017-07-30" ]]
+  "Clara Oswald" "Should return Nothig" Nothing
 
 dataBaseTest5 :: Test
-dataBaseTest5 = setupTest [ Movie 1 "Doctor Who" "2017-07-30" ] []
-                  "Clara Oswald" "Should return Nothig" Nothing
+dataBaseTest5 = setupTest
+  [ Movie 1 "Doctor Who" "2017-07-30" ] []
+  "Clara Oswald" "Should return Nothig" Nothing
 
 setupCleanupTest :: [Movie] -> String -> [Movie] -> String -> Test
 setupCleanupTest movies date expected description = TestCase ( do
@@ -105,14 +102,14 @@ setupCleanupTest movies date expected description = TestCase ( do
   )
 
 dataBaseCleanupTest :: Test
-dataBaseCleanupTest = setupCleanupTest [ Movie 1 "TestMovie" "2016-01-01" ]
-                        "2017-01-01" [] "Should not find any movies anymore"
+dataBaseCleanupTest = setupCleanupTest
+  [ Movie 1 "TestMovie" "2016-01-01" ] "2017-01-01" []
+  "Should not find any movies anymore"
 
 dataBaseCleanupTest1 :: Test
-dataBaseCleanupTest1 = setupCleanupTest [ Movie 1 "TestMovie" "2016-01-01",
-                        Movie 2 "TestMovie" "2017-01-02" ]
-                        "2017-01-01" [ Movie 2 "TestMovie" "2017-01-02" ]
-                        "Should find only movie 2"
+dataBaseCleanupTest1 = setupCleanupTest
+  [ Movie 1 "TestMovie" "2016-01-01", Movie 2 "TestMovie" "2017-01-02" ]
+  "2017-01-01" [ Movie 2 "TestMovie" "2017-01-02" ] "Should find only movie 2"
 
 dataBaseCleanupTest2 :: Test
 dataBaseCleanupTest2 = setupCleanupTest [] "2017-01-01" [] "Should find any movie"
@@ -131,24 +128,26 @@ setupCleanupTest2 movies actores date description expected = TestCase ( do
   )
 
 dataBaseCleanupTest3 :: Test
-dataBaseCleanupTest3 = setupCleanupTest2 [ Movie 1 "Doctor Who" "2016-01-01",
-                        Movie 2 "Boradchurch" "2017-01-02"]
-                        [ Actor 1 "David Tennant" [ Movie 1 "Doctor Who" "2016-01-01",
-                        Movie 2 "Boradchurch" "2017-01-02" ]]
-                        "2017-01-03" "The actore should be removed" []
+dataBaseCleanupTest3 = setupCleanupTest2
+  [ Movie 1 "Doctor Who" "2016-01-01", Movie 2 "Boradchurch" "2017-01-02"]
+  [ Actor 1 "David Tennant" [ Movie 1 "Doctor Who" "2016-01-01",
+                              Movie 2 "Boradchurch" "2017-01-02" ]]
+  "2017-01-03" "The actore should be removed" []
+
 dataBaseCleanupTest4 :: Test
-dataBaseCleanupTest4 = setupCleanupTest2 [ Movie 1 "Doctor Who" "2016-01-01",
-                        Movie 2 "Boradchurch" "2017-01-02" ]
-                        [ Actor 1 "David Tennant" [ Movie 1 "Doctor Who" "2016-01-01",
-                         Movie 2 "Boradchurch" "2017-01-02" ]]
-                        "2016-02-01" "The movie schould be removed from the actore"
-                        [ Actor 1 "David Tennant" [ Movie 2 "Boradchurch" "2017-01-02" ]]
+dataBaseCleanupTest4 = setupCleanupTest2
+  [ Movie 1 "Doctor Who" "2016-01-01", Movie 2 "Boradchurch" "2017-01-02" ]
+  [ Actor 1 "David Tennant" [ Movie 1 "Doctor Who" "2016-01-01",
+                              Movie 2 "Boradchurch" "2017-01-02" ]]
+  "2016-02-01" "The movie schould be removed from the actore"
+  [ Actor 1 "David Tennant" [ Movie 2 "Boradchurch" "2017-01-02" ]]
 
 dataBaseDateTest1 :: Test
 dataBaseDateTest1 = TestCase (do
   conn <- dbConnect
   initialiseDB conn
-  insertMovieIntoDB conn [ Movie 1 "Doctor Who" "2016-03-01", Movie 2 "Boradchurch" "2017-01-02" ]
+  insertMovieIntoDB conn [ Movie 1 "Doctor Who" "2016-03-01",
+      Movie 2 "Boradchurch" "2017-01-02" ]
   insertActorIntoDB conn [ Actor 1 "David Tennant" [ Movie 1 "Doctor Who" "2016-01-01"]]
   date1 <- getDateOfLastMoveInDB conn
   clearDatabase conn
@@ -168,22 +167,27 @@ dataBaseDateTest2 = TestCase (do
   assertEqual "ecpect the date of movie 1" date2 Nothing
   )
 
-dataStructuresTests :: Test
-dataStructuresTests     = TestList []
-httpRequestModuleTests :: Test
-httpRequestModuleTests  = TestList []
-httpRequestModule2Tests :: Test
-httpRequestModule2Tests = TestList []
-ioActionModuleTests :: Test
-ioActionModuleTests     = TestList []
+-- #############################################################################
+-- ############################ JSON Parser Tests###############################
+-- #############################################################################
 jsonParserModuleTests :: Test
-jsonParserModuleTests   = TestList [ TestLabel "Should parse 2 movies" jsonMovieParserTest1,
-                                     TestLabel "Should return a empty list" jsonMovieParserTest2,
-                                     TestLabel "Should return a empty list" jsonMovieParserTest3,
-                                     TestLabel "Should parse 1 movies" jsonMovieParserTest4,
-                                     TestLabel "Should parse pages correctly" jsonPagesParserTest1,
-                                     TestLabel "Should pget an error and return default value" jsonPagesParserTest2,
-                                     TestLabel "Should pget an error and return default value" jsonPagesParserTest3]
+jsonParserModuleTests = TestList
+  [ TestLabel "Should parse 2 movies" jsonMovieParserTest1,
+    TestLabel "Should return a empty list" jsonMovieParserTest2,
+    TestLabel "Should return a empty list" jsonMovieParserTest3,
+    TestLabel "Should parse 1 movies" jsonMovieParserTest4,
+    TestLabel "Should parse pages correctly" jsonPagesParserTest1,
+    TestLabel "Should get an error and return default value" jsonPagesParserTest2,
+    TestLabel "Should get an error and return default value" jsonPagesParserTest3,
+    TestLabel "Should parse one actor" jsonActorParserTest1,
+    TestLabel "Should get an error and return default value" jsonActorParserTest2,
+    TestLabel "Should get an error and return default value" jsonActorParserTest3,
+    TestLabel "Shoud parse one Movie2" jsonMovie2ParserTest1,
+    TestLabel "Should get an error and return default value" jsonMovie2ParserTest2,
+    TestLabel "Should get an error and return default value" jsonMovie2ParserTest3,
+    TestLabel "Should parse one cinema" jsonCinemaParserTest1,
+    TestLabel "Should get an error and return default value" jsonCinemaParserTest2,
+    TestLabel "Should get an error and return default value" jsonCinemaParserTest3 ]
 
 jsonParserTestGenerator :: (Eq a, Show a) => (B.ByteString -> a) -> B.ByteString -> String -> a -> Test
 jsonParserTestGenerator parser json description expected = TestCase (do
@@ -233,7 +237,7 @@ jsonMovieParserTest4 = jsonParserTestGenerator parseMovies
                           "Schould fine one movie"
                           [Movie 371638 "Test" "2017-12-01"]
 
--- ########################### Movie Parser Tests ##############################
+-- ########################### Parge Parser Tests ##############################
 jsonPagesParserTest1 :: Test
 jsonPagesParserTest1 = jsonParserTestGenerator parsePages
                           "{\"page\":1, \"total_pages\":7,\
@@ -252,3 +256,59 @@ jsonPagesParserTest3 :: Test
 jsonPagesParserTest3 = jsonParserTestGenerator parsePages
                           "Invalid Input"
                           "Schould get an error and return 1" 1
+
+-- ########################### Actor Parser Tests ##############################
+jsonActorParserTest1 :: Test
+jsonActorParserTest1 = jsonParserTestGenerator (`parseActors` Movie 1 "Test" "2017-12-01")
+                         "{\"id\":123,\"cast\":[{\"id\":16270,\"name\":\"Johannes\"}]}"
+                         "Should parse one Actor"
+                         [Actor 16270 "Johannes" [Movie 1 "Test" "2017-12-01"]]
+
+jsonActorParserTest2 :: Test
+jsonActorParserTest2 = jsonParserTestGenerator (`parseActors` Movie 1 "Test" "2017-12-01")
+                        "Invalid Input" "Should get an error and return an empty list" []
+
+jsonActorParserTest3 :: Test
+jsonActorParserTest3 = jsonParserTestGenerator (`parseActors` Movie 1 "Test" "2017-12-01")
+                         "{\"id\":\"123\",\"cast\":[{\"id\":16270,\"name\":Johannes}]}"
+                         "Should get an error and return an empty list" []
+
+-- ########################### Movie2 Parser Tests ##############################
+jsonMovie2ParserTest1 :: Test
+jsonMovie2ParserTest1 = jsonParserTestGenerator parseMovies2
+                          "{\"status\":\"ok\",\"listings\":[{\"title\":\"TestMovie\"\
+                          \,\"times\":[\"13:40\",\"19:30\"]}]}"
+                          "Schould parse one Movie2" [Movie2 "TestMovie"]
+
+jsonMovie2ParserTest2 :: Test
+jsonMovie2ParserTest2 = jsonParserTestGenerator parseMovies2
+                          "Invalid Input"
+                          "Shouldn't parse any movie" []
+
+jsonMovie2ParserTest3 :: Test
+jsonMovie2ParserTest3 = jsonParserTestGenerator parseMovies2
+                          "{\"status\":\"ok\",\"listings\":[{\"title\":TestMovie\
+                          \,\"times\":[\"13:40\",\"19:30\"]}]}"
+                          "Should get an error and return a empty list as default value"
+                          []
+
+-- ########################### Cinema Parser Tests ##############################
+
+jsonCinemaParserTest1 :: Test
+jsonCinemaParserTest1 = jsonParserTestGenerator parseCinemas
+                          "{\"postcode\":\"E13DH\",\"cinemas\":[{\"name\":\
+                          \\"TestCinema\",\"id\":\"10480\",\"distance\":1.33}]}"
+                          "Should return one cinema" [Cinema "10480" "TestCinema" 1.33]
+
+jsonCinemaParserTest2 :: Test
+jsonCinemaParserTest2 = jsonParserTestGenerator parseCinemas
+                          "{\"postcode\":\"E13DH\",\"cinemas\":[{\"name\":\
+                          \\"TestCinema\",\"id\":10480,\"distance\":1.33}]}"
+                          "Should get an error and return a empty list as default value"
+                          []
+
+jsonCinemaParserTest3 :: Test
+jsonCinemaParserTest3 = jsonParserTestGenerator parseCinemas
+                          "Invalid Input"
+                          "Should get an error and return a empty list as default value"
+                          []
