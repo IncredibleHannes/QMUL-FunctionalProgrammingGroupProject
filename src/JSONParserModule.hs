@@ -20,8 +20,6 @@ module JSONParserModule
     , parsePages
     , parseCinemas
     , parseMovies2
-    , MovieFromJSON
-    , Results
      ) where
 
 import DataStructures
@@ -36,17 +34,15 @@ import qualified Data.ByteString.Lazy as B
 import Data.Maybe
 import GHC.Generics
 
+
 -- ################################## Results #################################
 
-data Results = Results {id :: Int, title :: T.Text, releaseDate :: T.Text}
+data Results = Results {id :: Int, title :: String, releaseDate :: String}
   deriving (Show, Generic)
 
 instance FromJSON Results where
    parseJSON (Object v) = Results <$> v .: "id" <*> v .: "title" <*> v .: "release_date"
    parseJSON _ = mzero
-
-instance ToJSON Results where
-   toJSON (Results id title release_date) = object ["id" .= id, "title" .= title, "release_date" .= release_date]
 
 -- ################################## Movie ###################################
 
@@ -57,20 +53,17 @@ instance FromJSON MovieFromJSON where
    parseJSON (Object v) = MovieFromJSON <$> v .: "results" <*> v .: "total_pages"
    parseJSON _ = mzero
 
-instance ToJSON MovieFromJSON where
-  toJSON (MovieFromJSON results pages) = object ["results" .= results, "total_pages" .= pages]
-
 parsePages :: B.ByteString -> Int
-parsePages b = pages fromJSON
-   where fromJSON = fromJust $ decode b
+parsePages b = pages (fromJust $ decode b)
 
 instance FromJSON Movie where
    parseJSON (Object o) = Movie <$> o .: "id" <*> o .: "title" <*> o .: "release_date"
    parseJSON _ = mzero
 
 convertMovie :: Results -> Movie
-convertMovie (Results i t r) = Movie i (T.unpack t) (T.unpack r)
+convertMovie (Results i t r) = Movie i t r
 
+-- | This function parses a given byte string representig JSON into a list of movies
 parseMovies :: B.ByteString -> [Movie]
 parseMovies b = map convertMovie moviesText
   where fromJSON = fromJust $ decode b
@@ -84,6 +77,8 @@ instance FromJSON TmpActor where
     parseJSON (Object o) = TmpActor <$> o .: "id" <*> o .: "name"
     parseJSON _ = mzero
 
+{- | This function parses a given byte string representig JSON and a movie into a list
+     actores -}
 parseActors :: B.ByteString -> Movie -> [Actor]
 parseActors cn movie = map (converteTmp movie) (fromMaybe [] (parseMaybe actorParser =<< decode cn))
   where
@@ -98,6 +93,7 @@ instance FromJSON Movie2 where
   parseJSON (Object o) = Movie2 <$>  o .: "title"
   parseJSON _ = mzero
 
+-- | This function parses a given byte string representig JSON into a list of movies2
 parseMovies2 :: B.ByteString -> [Movie2]
 parseMovies2 m = fromMaybe [] (parseMaybe movies2Parser =<< decode m)
 
@@ -109,6 +105,7 @@ instance FromJSON Cinema where
   parseJSON (Object o) = Cinema <$>  o .: "id" <*> o .: "name" <*> o .: "distance"
   parseJSON _ = mzero
 
+-- | This function parses a given byte string representig JSON into a list of cinema
 parseCinemas :: B.ByteString -> [Cinema]
 parseCinemas cn = fromMaybe [] (parseMaybe cinemaParser =<< decode cn)
 

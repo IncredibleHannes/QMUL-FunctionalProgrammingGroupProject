@@ -35,6 +35,10 @@ To execute:
 Note: If you run the programm for the first type, it may take a while. The programm
 has to download all movies and store the into the database.
 
+## Database cleanup
+By default only the movies of the last thwo months will be downloaded. Further all movies
+older than six months will be deleted from the database to save disk space.
+
 ## Haddoc
 The haddoc documentation can be found at:
 https://incrediblehannes.github.io/QMUL-FunctionalProgrammingGroupProject/index.html

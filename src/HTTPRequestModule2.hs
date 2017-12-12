@@ -33,19 +33,14 @@ httpGetCinemaList loc = fmap parseCinemas (simpleHttp $ cinemaReqURL loc)
 cinemaReqURL:: String -> String
 cinemaReqURL = (++) "https://api.cinelist.co.uk/search/cinemas/location/"
 
+
 {- | for a given movie and a list of cinemas this function returns a list of
      cinemas that plays this movie -}
 httpApiCinemaRequest :: Movie -> [Cinema] -> IO [Cinema]
 httpApiCinemaRequest movie = filterM (playsMovie movie)
 
-cinemaMoviesURL:: String -> String
-cinemaMoviesURL = (++) "https://api.cinelist.co.uk/get/times/cinema/"
-
-httpGetListOfMoives :: Cinema -> IO [Movie2]
-httpGetListOfMoives (Cinema i _ _) = do
-  let cinemaHandle = (\e -> return B.empty) :: HttpException -> IO B.ByteString
-  fmap parseMovies2 (handle cinemaHandle (simpleHttp $ cinemaMoviesURL i))
-
+-- for a given movie and a cinema this function makes a lookup API call to figure
+-- out if the movie is played in the given cinema
 playsMovie :: Movie -> Cinema -> IO Bool
 playsMovie movie cinema = do
   movieList <- httpGetListOfMoives cinema
@@ -56,3 +51,14 @@ playsMovie movie cinema = do
       contains' (Movie2 t1 : xs) m@(Movie _ t2 _) = isInfixOf (map toUpper t1)
                                                     (map toUpper t2)
                                                     || contains' xs m
+
+-- This funcion makes the acutal API request and returns al list of moviesText
+-- played in a given cinema
+httpGetListOfMoives :: Cinema -> IO [Movie2]
+httpGetListOfMoives (Cinema i _ _) = do
+  let cinemaHandle = (\e -> return B.empty) :: HttpException -> IO B.ByteString
+  fmap parseMovies2 (handle cinemaHandle (simpleHttp $ cinemaMoviesURL i))
+
+-- for a given cinemaID the api lookup string will be produced
+cinemaMoviesURL:: String -> String
+cinemaMoviesURL = (++) "https://api.cinelist.co.uk/get/times/cinema/"

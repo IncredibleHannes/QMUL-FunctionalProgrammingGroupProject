@@ -22,21 +22,25 @@ module IOActionModule
 
 import DataStructures
 
+{- | This function asks the user for a location and returns it as a string -}
 askForLocation :: IO String
 askForLocation = do
   putStrLn "Please enter your location: "
   getLine
 
+{- | This function asks the user for a actor and returns it as a string -}
 askForActor :: IO String
 askForActor = do
   putStrLn "Please enter the actore name you want to search for: "
   getLine
 
+{- | This function asks the user to select a movie and returns it as an int -}
 askToSelectMovie :: IO Int
 askToSelectMovie = do
   putStrLn "Please selecte a movie now: "
   readLn
 
+{- | This function prints a given list of cinemas to std out -}
 printCinemas :: [Cinema] -> IO ()
 printCinemas c = do
   putStrLn "The following cinemas in your area show this film: "
@@ -47,6 +51,7 @@ printCinemas c = do
         print x
         printCinemas' xs
 
+{- | This function prints a given list of movies to std out -}
 printMovies :: [Movie] -> IO()
 printMovies x = do
   putStrLn "The given actor plays in the following movies"

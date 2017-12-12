@@ -31,7 +31,8 @@ data Movie = Movie { movieId :: Int, title :: String, releaseDate :: String }
 instance Show Movie where
   show (Movie _ title _) = title
 
-{- | Data structure representing a Movie from the second API  -}
+{- | Data structure representing a Movie from the second API, whicht have no cinemaId and
+     release date. -}
 newtype Movie2 = Movie2 { movieTitle :: String }
   deriving (Eq, Show)
 

@@ -128,7 +128,7 @@ getActorsFromDatabase conn = do
       parseMovie :: [SqlValue] -> Movie
       parseMovie x = Movie (fromSql $ head x) (fromSql $ x !! 1) (fromSql $ x !! 2)
 
-{- | removes all movies bevor a given date and deals with inonsistent states in the
+{- | removes all movies bevor a given date and deals with inconsistent states in the
      database after the deletion of a movie-}
 cleanupDatabase :: Connection -> String -> IO ()
 cleanupDatabase conn date = do

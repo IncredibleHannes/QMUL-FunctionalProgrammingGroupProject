@@ -30,15 +30,20 @@ import Control.Monad
 import qualified Network.HTTP.Conduit as N
 import Data.DateTime
 
+{- | The real application function. This function throws lots of exceptions witch will be handled in
+     the main function -}
 run :: IO ()
 run = do
   conn <- dbConnect
   initialiseDB conn
-  cleanupDatabase conn "2017-09-15"
+  date <- getCurrentTime
+
+  let lastMonthDay = getDateString (addMinutes (-2 * 30 * 24 * 60) date) -- two months
+  cleanupDatabase conn (getDateString (addMinutes (-6 * 30 * 24 * 60) date)) -- six months
   lastMovieDate <- getDateOfLastMoveInDB conn
   let movieHandle = (\e -> return []) :: N.HttpException -> IO [Movie]
   listOfMovies <- handle movieHandle
-                  (httpGetListOfMovies $ fromMaybe "2017-11-15" lastMovieDate)
+                  (httpGetListOfMovies $ fromMaybe lastMonthDay lastMovieDate)
   let actorHandle = (\e -> return []) :: N.HttpException -> IO [Actor]
   listOfActors <- handle actorHandle (httpGetListOfActores listOfMovies)
   insertMovieIntoDB conn listOfMovies
@@ -63,6 +68,7 @@ run = do
   printCinemas filteredCinemas
   disconnectDB conn
 
+-- | The main function of this application
 main :: IO ()
 main = do
   let mainHandler = (print . takeWhile (/= '\n') . show) :: SomeException -> IO ()
