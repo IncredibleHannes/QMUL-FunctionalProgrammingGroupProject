@@ -19,12 +19,14 @@ import Test.HUnit
 import DataBaseModule
 import DataStructures
 import JSONParserModule
+import HTTPRequestModule2
 import qualified Data.ByteString.Lazy as B
 
 main :: IO Counts
 main = do
   runTestTT dataBaseModuleTests
   runTestTT jsonParserModuleTests
+  runTestTT httpModule2Tests
 
 -- #############################################################################
 -- ############################# Database Tests#################################
@@ -312,3 +314,49 @@ jsonCinemaParserTest3 = jsonParserTestGenerator parseCinemas
                           "Invalid Input"
                           "Should get an error and return a empty list as default value"
                           []
+
+-- #############################################################################
+-- ############################ HttpModule2 Tests###############################
+-- #############################################################################
+httpModule2Tests :: Test
+httpModule2Tests = TestList
+  [ TestLabel "Should return all cineams in stratford" httpModule2CinemaListTest1,
+    TestLabel "Should return an empty list" httpModule2CinemaListTest2,
+    TestLabel "Should return the given cinema" httpModule2CinemaListTest3,
+    TestLabel "Should return an empty list" httpModule2CinemaListTest4]
+
+httpModule2CinemaListTest1 :: Test
+httpModule2CinemaListTest1 = TestCase (do
+  cinemaList <- httpGetCinemaList "Stratford"
+  assertEqual "Should return all cineams in stratford"
+    [ Cinema "6994" "Stratford Picturehouse, London" 0.25,
+      Cinema "10634" "Stratford-upon-Avon Picturehou Picturehouse, CV37 6NL" 0.32,
+      Cinema "9472" "VUE Leamington Spa, Leamington Spa" 9.67,
+      Cinema "9474" "VUE Redditch, Redditch" 12.81,
+      Cinema "7542" "Cineworld Solihull, Solihull" 15.66,
+      Cinema "9408" "Odeon Coventry, "17.19,
+      Cinema "9448" "Odeon Banbury, Banbury" 17.83,
+      Cinema "10146" "Cineworld Birmingham - NEC, Bickenhill" 18.42,
+      Cinema "7125" "Empire Birmingham Great Park, Birmingham" 19.18] cinemaList
+  )
+
+httpModule2CinemaListTest2 :: Test
+httpModule2CinemaListTest2 = TestCase (do
+  cinemaList <- httpApiCinemaRequest (Movie 1 "TestMove" "2017-12-12")
+    [ Cinema "6994" "Stratford Picturehouse, London" 0.25 ]
+  assertEqual "Should return an empty list" [] cinemaList
+  )
+
+httpModule2CinemaListTest3 :: Test
+httpModule2CinemaListTest3 = TestCase (do
+  cinemaList <- httpApiCinemaRequest (Movie 1 "Paddington 2" "2017-12-12")
+    [ Cinema "6994" "Stratford Picturehouse, London" 0.25 ]
+  assertEqual "Should returnthe given cinema"
+    [ Cinema "6994" "Stratford Picturehouse, London" 0.25 ] cinemaList
+  )
+
+httpModule2CinemaListTest4 :: Test
+httpModule2CinemaListTest4 = TestCase (do
+  cinemaList <- httpApiCinemaRequest (Movie 1 "Paddington 2" "2017-12-12") []
+  assertEqual "Should return an empty list" [] cinemaList
+  )
