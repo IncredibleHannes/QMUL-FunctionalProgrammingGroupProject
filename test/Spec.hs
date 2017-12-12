@@ -12,10 +12,15 @@ Some tests to test the application
 Written by Johannes Hartmann, ec17512@qmul.ac.uk
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
+
 import Test.HUnit
 
 import DataBaseModule
 import DataStructures
+import JSONParserModule
+import qualified Data.ByteString.Lazy as B
+import Data.ByteString.Char8 as C8 (pack)
 
 main :: IO Counts
 main = do
@@ -172,4 +177,48 @@ httpRequestModule2Tests = TestList []
 ioActionModuleTests :: Test
 ioActionModuleTests     = TestList []
 jsonParserModuleTests :: Test
-jsonParserModuleTests   = TestList []
+jsonParserModuleTests   = TestList [ TestLabel "Should parse 2 movies" jsonMovieParserTest1,
+                                     TestLabel "Should return a empty list" jsonMovieParserTest2,
+                                     TestLabel "Should return a empty list" jsonMovieParserTest3,
+                                     TestLabel "Should parse 1 movies" jsonMovieParserTest4]
+
+
+-- ########################### Movie Parser Tests ##############################
+jsonMovieParserTestGenerator :: B.ByteString -> [Movie] -> Test
+jsonMovieParserTestGenerator json expected = TestCase (do
+  let result = parseMovies json
+  assertEqual "Movie schould be the same as in the JSON" expected result
+  )
+
+movieJson :: B.ByteString
+movieJson = "{\"page\":1,\"total_results\":127,\"total_pages\":7,\"results\": \
+  \[{\"vote_count\":58,\"id\":371638,\"video\":false,\"vote_average\":7.7,\"title\": \
+  \\"The Disaster Artist\",\"popularity\":204.431944,\"poster_path\":\"\\/uCH6FOFsDW6\
+  \pfvbbmIIswuvuNtM.jpg\",\"original_language\":\"en\",\"original_title\":\
+  \\"The Disaster Artist\",\"genre_ids\":[18,35,36],\"backdrop_path\":\"\\\
+  \/bAI7aPHQcvSZXvt7L11kMJdS0Gm.jpg\",\"adult\":false,\"overview\":\"Some description \
+  \\",\"release_date\":\"2017-12-01\"},{\"vote_count\":14,\"id\":429189,\"video\": \
+  \false,\"vote_average\":3.3,\"title\":\"Wonder Wheel\",\"popularity\":108.762089,\
+  \\"poster_path\":\"\\/fPXn8SW4pa4kJErAIAJLmb3Znns.jpg\",\"original_language\":\"en\
+  \\",\"original_title\":\"Wonder Wheel\",\"genre_ids\":[18],\"backdrop_path\":\"\\/\
+  \jGYeZzcAG0df2nWRLJW2CiweyyG.jpg\",\"adult\":false,\"overview\":\"some description\
+  \.\",\"release_date\":\"2017-12-01\"}]}"
+
+jsonMovieParserTest1 :: Test
+jsonMovieParserTest1 = jsonMovieParserTestGenerator movieJson
+                          [ Movie 371638 "The Disaster Artist" "2017-12-01",
+                            Movie 429189 "Wonder Wheel" "2017-12-01"]
+
+jsonMovieParserTest2 :: Test
+jsonMovieParserTest2 = jsonMovieParserTestGenerator "Invalid text" []
+
+jsonMovieParserTest3 :: Test
+jsonMovieParserTest3 = jsonMovieParserTestGenerator "{\"page\":1, \"total_pages\":7,\
+                          \ \"results\": [{\"id\":\"371638\", \"title\":\"Test\", \
+                          \\"release_date\":\"2017-12-01\" }]}" []
+
+jsonMovieParserTest4 :: Test
+jsonMovieParserTest4 = jsonMovieParserTestGenerator "{\"page\":1, \"total_pages\":7,\
+                          \ \"results\": [{\"id\":371638, \"title\":\"Test\", \
+                          \\"release_date\":\"2017-12-01\" }]}"
+                          [Movie 371638 "Test" "2017-12-01"]

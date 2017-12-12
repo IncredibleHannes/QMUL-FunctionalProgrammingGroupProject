@@ -32,8 +32,15 @@ To build this project just execute in the main folder:
 To execute:
 `stack exec groupproject-exe`
 
-Note: If you run the programm for the first type, it may take a while. The programm
-has to download all movies and store the into the database.
+Note: If you run the programm for the first type, it may take a while. All movies
+have to be downloaded and stored into the database.
+
+## Tests
+This application provides a set of tests. To run the tests execute `stack test`
+in the main folder. 
+
+Note: The tests are cleaning the database. If you run the program again, every
+movie have to be downloaded again.
 
 ## Database cleanup
 By default only the movies of the last thwo months will be downloaded. Further all movies
