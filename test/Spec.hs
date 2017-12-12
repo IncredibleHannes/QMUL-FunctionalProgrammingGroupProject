@@ -180,15 +180,19 @@ jsonParserModuleTests :: Test
 jsonParserModuleTests   = TestList [ TestLabel "Should parse 2 movies" jsonMovieParserTest1,
                                      TestLabel "Should return a empty list" jsonMovieParserTest2,
                                      TestLabel "Should return a empty list" jsonMovieParserTest3,
-                                     TestLabel "Should parse 1 movies" jsonMovieParserTest4]
+                                     TestLabel "Should parse 1 movies" jsonMovieParserTest4,
+                                     TestLabel "Should parse pages correctly" jsonPagesParserTest1,
+                                     TestLabel "Should pget an error and return default value" jsonPagesParserTest2,
+                                     TestLabel "Should pget an error and return default value" jsonPagesParserTest3]
 
+jsonParserTestGenerator :: (Eq a, Show a) => (B.ByteString -> a) -> B.ByteString -> String -> a -> Test
+jsonParserTestGenerator parser json description expected = TestCase (do
+ let result = parser json
+ assertEqual description expected result
+ )
 
 -- ########################### Movie Parser Tests ##############################
-jsonMovieParserTestGenerator :: B.ByteString -> [Movie] -> Test
-jsonMovieParserTestGenerator json expected = TestCase (do
-  let result = parseMovies json
-  assertEqual "Movie schould be the same as in the JSON" expected result
-  )
+
 
 movieJson :: B.ByteString
 movieJson = "{\"page\":1,\"total_results\":127,\"total_pages\":7,\"results\": \
@@ -205,20 +209,46 @@ movieJson = "{\"page\":1,\"total_results\":127,\"total_pages\":7,\"results\": \
   \.\",\"release_date\":\"2017-12-01\"}]}"
 
 jsonMovieParserTest1 :: Test
-jsonMovieParserTest1 = jsonMovieParserTestGenerator movieJson
+jsonMovieParserTest1 = jsonParserTestGenerator parseMovies  movieJson
+                          "Schould find 2 movies"
                           [ Movie 371638 "The Disaster Artist" "2017-12-01",
                             Movie 429189 "Wonder Wheel" "2017-12-01"]
 
 jsonMovieParserTest2 :: Test
-jsonMovieParserTest2 = jsonMovieParserTestGenerator "Invalid text" []
+jsonMovieParserTest2 = jsonParserTestGenerator parseMovies "Invalid text"
+                          "Shouldn't find an movie" []
 
 jsonMovieParserTest3 :: Test
-jsonMovieParserTest3 = jsonMovieParserTestGenerator "{\"page\":1, \"total_pages\":7,\
+jsonMovieParserTest3 = jsonParserTestGenerator parseMovies
+                          "{\"page\":1, \"total_pages\":7,\
                           \ \"results\": [{\"id\":\"371638\", \"title\":\"Test\", \
-                          \\"release_date\":\"2017-12-01\" }]}" []
+                          \\"release_date\":\"2017-12-01\" }]}"
+                          "Schould get parse error and return empty list" []
 
 jsonMovieParserTest4 :: Test
-jsonMovieParserTest4 = jsonMovieParserTestGenerator "{\"page\":1, \"total_pages\":7,\
+jsonMovieParserTest4 = jsonParserTestGenerator parseMovies
+                          "{\"page\":1, \"total_pages\":7,\
                           \ \"results\": [{\"id\":371638, \"title\":\"Test\", \
                           \\"release_date\":\"2017-12-01\" }]}"
+                          "Schould fine one movie"
                           [Movie 371638 "Test" "2017-12-01"]
+
+-- ########################### Movie Parser Tests ##############################
+jsonPagesParserTest1 :: Test
+jsonPagesParserTest1 = jsonParserTestGenerator parsePages
+                          "{\"page\":1, \"total_pages\":7,\
+                          \ \"results\": [{\"id\":371638, \"title\":\"Test\", \
+                          \\"release_date\":\"2017-12-01\" }]}"
+                          "Schould return seven" 7
+
+jsonPagesParserTest2 :: Test
+jsonPagesParserTest2 = jsonParserTestGenerator parsePages
+                          "{\"page\":1, \"total_pages\":\"7\",\
+                          \ \"results\": [{\"id\":371638, \"title\":\"Test\", \
+                          \\"release_date\":\"2017-12-01\" }]}"
+                          "Schould get an error and return 1" 1
+
+jsonPagesParserTest3 :: Test
+jsonPagesParserTest3 = jsonParserTestGenerator parsePages
+                          "Invalid Input"
+                          "Schould get an error and return 1" 1
