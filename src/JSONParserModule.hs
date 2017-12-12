@@ -44,7 +44,7 @@ instance FromJSON Results where
    parseJSON (Object v) = Results <$> v .: "id" <*> v .: "title" <*> v .: "release_date"
    parseJSON _ = mzero
 
--- ################################## Movie ###################################
+-- ################################## Results ##################################
 
 data MovieFromJSON = MovieFromJSON {results :: [Results], pages :: Int}
   deriving (Show, Generic)
@@ -53,21 +53,25 @@ instance FromJSON MovieFromJSON where
    parseJSON (Object v) = MovieFromJSON <$> v .: "results" <*> v .: "total_pages"
    parseJSON _ = mzero
 
+{- | This function parses a given byte string representig JSON into the total
+     number of pages -}
 parsePages :: B.ByteString -> Int
-parsePages b = pages (fromJust $ decode b)
+parsePages b = fromMaybe 1 (parseMaybe pageParser =<< decode b)
 
+pageParser :: Value -> Parser Int
+pageParser = withObject "pageParser" $ \o -> o.: "total_pages"
+
+-- ################################## Movie ####################################
 instance FromJSON Movie where
    parseJSON (Object o) = Movie <$> o .: "id" <*> o .: "title" <*> o .: "release_date"
    parseJSON _ = mzero
 
-convertMovie :: Results -> Movie
-convertMovie (Results i t r) = Movie i t r
-
 -- | This function parses a given byte string representig JSON into a list of movies
 parseMovies :: B.ByteString -> [Movie]
-parseMovies b = map convertMovie moviesText
-  where fromJSON = fromJust $ decode b
-        moviesText = results fromJSON
+parseMovies b = fromMaybe [] (parseMaybe movieParser =<< decode b)
+
+movieParser :: Value -> Parser [Movie]
+movieParser = withObject "movieParser" $ \o -> o.: "results"
 
 -- ############################### Actors ######################################
 
