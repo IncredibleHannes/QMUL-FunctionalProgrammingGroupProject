@@ -7,8 +7,8 @@
    Stability  : provisional
    Portability: stable
 
-This module provides all methodes neccesary for fillig the datanase with movies
-and actores
+This module provides all the methods necessary for filling the database with movies
+and actors
 
 Written by  Liam Kelly, Johannes Hartmann
 -}
@@ -56,7 +56,7 @@ movieReqURL fromDate i = do
                    "&primary_release_date.lte=", getDateString date]
     where dShow x = if x < 10 then "0" ++ show x else show x
 
--- ############################### Actores #####################################
+-- ############################### Actors #####################################
 
 -- | Looks up all actors playing in the given list of movies at the "TheMovieDB" API.
 httpGetListOfActores :: [Movie] -> IO [Actor]
@@ -77,7 +77,7 @@ actorReqUrl aId = concat [ "https://api.themoviedb.org/3/movie/", show aId,
                           "/credits?api_key=77a5749742a2117c0b9c739d7bad6518" ]
 
 
-{- hepler function that concatitates the actores so that duplicates with different
+{- helper function that concatenates the actors so that duplicates with different
    movies are combined together -}
 concatActors :: [[Actor]] -> [Actor]
 concatActors x = removeDups $ concat x

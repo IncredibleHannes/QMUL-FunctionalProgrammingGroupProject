@@ -18,8 +18,8 @@ module DataStructures(
       Movie2(Movie2)
     ) where
 
-{- | Data structure representig a movie. The first parameter is the ID and the
-     second is the name of the movie and the third the release day -}
+{- | Data structure representing a movie. The first parameter is the ID and the
+     second is the name of the movie and the third one is the release day -}
 data Movie = Movie { movieId :: Int, title :: String, releaseDate :: String }
   deriving (Eq)
 
@@ -31,14 +31,14 @@ instance Show Movie where
 newtype Movie2 = Movie2 { movieTitle :: String }
   deriving (Eq, Show)
 
-{- | Data structure representig a actor. The first parameter is the ID, the
-     second is the name of the actor and the third are all movies he plays in -}
-     -- maybe use list of mio
+{- | Data structure representing an actor. The first parameter is the ID, the
+     second is the name of the actor and the third is a List containing all movies he plays in -}
+     -- maybe use list of movies
 data Actor = Actor { actorId :: Int, actorName :: String, movie :: [Movie]}
   deriving (Eq, Show)
 
-{- | Data structure representig a cinema. The first parameter is the ID, the
-     second is the name of the cinema and the third is the range to the given
+{- | Data structure representing a cinema. The first parameter is the ID, the
+     second parameter is the name of the cinema and the third one is the range to the given
      location -}
 data Cinema = Cinema { cinemaId :: String, cinemaName :: String, distance :: Float }
   deriving (Eq)

@@ -7,7 +7,7 @@
    Stability  : provisional
    Portability: stable
 
-This module provides all functions that handles user interaction
+This module provides all the necessary functions for handling the user interaction
 
 Written by Johannes Hartmann
 -}
@@ -28,22 +28,22 @@ askForLocation = do
   putStrLn "Please enter your location: "
   getLine
 
-{- | This function asks the user for a actor and returns it as a string -}
+{- | This function asks the user for an actor and returns it as a string -}
 askForActor :: IO String
 askForActor = do
-  putStrLn "Please enter the actore name you want to search for: "
+  putStrLn "Please enter the actor name you want to search for: "
   getLine
 
 {- | This function asks the user to select a movie and returns it as an int -}
 askToSelectMovie :: IO Int
 askToSelectMovie = do
-  putStrLn "Please selecte a movie now: "
+  putStrLn "Please select a movie from the List: "
   readLn
 
 {- | This function prints a given list of cinemas to std out -}
 printCinemas :: [Cinema] -> IO ()
 printCinemas c = do
-  putStrLn "The following cinemas in your area show this film: "
+  putStrLn "the following cinemas in your area are currently showing the film: "
   printCinemas' c
     where
       printCinemas' []     = return ()

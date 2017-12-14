@@ -49,7 +49,7 @@ instance FromJSON MovieFromJSON where
    parseJSON (Object v) = MovieFromJSON <$> v .: "results" <*> v .: "total_pages"
    parseJSON _ = mzero
 
-{- | This function parses a given byte string representig JSON into the total
+{- | This function parses a given byte string representing a JSON into the total
      number of pages -}
 parsePages :: B.ByteString -> Int
 parsePages b = fromMaybe 1 (parseMaybe pageParser =<< decode b)
@@ -62,7 +62,7 @@ instance FromJSON Movie where
    parseJSON (Object o) = Movie <$> o .: "id" <*> o .: "title" <*> o .: "release_date"
    parseJSON _ = mzero
 
--- | This function parses a given byte string representig JSON into a list of movies
+-- | This function parses a given byte string representing a JSON into a list of movies
 parseMovies :: B.ByteString -> [Movie]
 parseMovies b = fromMaybe [] (parseMaybe movieParser =<< decode b)
 
@@ -77,8 +77,8 @@ instance FromJSON TmpActor where
     parseJSON (Object o) = TmpActor <$> o .: "id" <*> o .: "name"
     parseJSON _ = mzero
 
-{- | This function parses a given byte string representig JSON and a movie into a list
-     actores -}
+{- | This function parses a given byte string representing a JSON and a movie into a list
+     actors -}
 parseActors :: B.ByteString -> Movie -> [Actor]
 parseActors cn movie = map (converteTmp movie) (fromMaybe [] (parseMaybe actorParser =<< decode cn))
   where
@@ -93,7 +93,7 @@ instance FromJSON Movie2 where
   parseJSON (Object o) = Movie2 <$>  o .: "title"
   parseJSON _ = mzero
 
--- | This function parses a given byte string representig JSON into a list of movies2
+-- | This function parses a given byte string representing a JSON into a list of movies2
 parseMovies2 :: B.ByteString -> [Movie2]
 parseMovies2 m = fromMaybe [] (parseMaybe movies2Parser =<< decode m)
 
@@ -105,7 +105,7 @@ instance FromJSON Cinema where
   parseJSON (Object o) = Cinema <$>  o .: "id" <*> o .: "name" <*> o .: "distance"
   parseJSON _ = mzero
 
--- | This function parses a given byte string representig JSON into a list of cinema
+-- | This function parses a given byte string representing a JSON into a list of cinemas
 parseCinemas :: B.ByteString -> [Cinema]
 parseCinemas cn = fromMaybe [] (parseMaybe cinemaParser =<< decode cn)
 

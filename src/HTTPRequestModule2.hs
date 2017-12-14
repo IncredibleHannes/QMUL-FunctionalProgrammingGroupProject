@@ -7,7 +7,7 @@
    Stability  : provisional
    Portability: stable
 
-This module provides all neccesary methodes to look up a all cinemas that plays
+This module provides all the necessary methods to look up the list of cinemas that play
 a given movie in a given area
 
 Written by  Manuel Campos Villarreal, Johannes Hartmann
@@ -36,7 +36,7 @@ cinemaReqURL = (++) "https://api.cinelist.co.uk/search/cinemas/location/"
 
 
 {- | for a given movie and a list of cinemas this function returns a list of
-     cinemas that plays this movie -}
+     cinemas that play this movie -}
 httpApiCinemaRequest :: Movie -> [Cinema] -> IO [Cinema]
 httpApiCinemaRequest movie = filterM (playsMovie movie)
 
@@ -44,7 +44,7 @@ httpApiCinemaRequest movie = filterM (playsMovie movie)
 -- out if the movie is played in the given cinema
 playsMovie :: Movie -> Cinema -> IO Bool
 playsMovie movie cinema = do
-  movieList <- httpGetListOfMoives cinema
+  movieList <- httpGetListOfMovies cinema
   return $ contains' movieList movie
     where
       contains' :: [Movie2] -> Movie -> Bool
@@ -53,10 +53,10 @@ playsMovie movie cinema = do
                                                     (map toUpper t2)
                                                     || contains' xs m
 
--- This funcion makes the acutal API request and returns al list of moviesText
+-- This funcion makes the actual API request and returns a list of movies
 -- played in a given cinema
-httpGetListOfMoives :: Cinema -> IO [Movie2]
-httpGetListOfMoives (Cinema i _ _) = do
+httpGetListOfMovies :: Cinema -> IO [Movie2]
+httpGetListOfMovies (Cinema i _ _) = do
   let cinemaHandle = (\e -> return B.empty) :: HttpException -> IO B.ByteString
   fmap parseMovies2 (handle cinemaHandle (simpleHttp $ cinemaMoviesURL i))
 

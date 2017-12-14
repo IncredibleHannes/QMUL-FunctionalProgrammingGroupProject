@@ -7,7 +7,7 @@
    Stability  : stable
    Portability: portable
 
-This module handles all database related parts of this application.
+This module handles all database related parts of the application.
 
 Written by Johannes Hartmann
 -}
@@ -32,12 +32,12 @@ import Database.HDBC
 import Database.HDBC.Sqlite3
 import Control.Monad
 
--- | Establishes the connection to our movie database
+-- | Establishes the connection to the movie database
 dbConnect :: IO Connection
 dbConnect = connectSqlite3 "movies.db"
 
-{- | Given a connection to a database this function creates all the neccesary
-     tables if they are not existing bevore -}
+{- | Given a connection to a database this function creates all the necessary
+     tables if they don't already exist  -}
 initialiseDB :: Connection -> IO ()
 initialiseDB conn = do
    tables <- getTables conn
@@ -60,8 +60,8 @@ insertMovieIntoDB conn movie = do
     executeMany stmt args
     commit conn
 
-{- | Inserts a given list of actors into the actores table and fills the plays
-     relation table with all actore movie connections -}
+{- | Inserts a given list of actors into the actors table and fills the plays
+     relation table with all actor-movie connections -}
 insertActorIntoDB :: Connection -> [Actor] -> IO ()
 insertActorIntoDB conn actores = do
     -- creating actores table
@@ -78,8 +78,8 @@ insertActorIntoDB conn actores = do
     executeMany stmt playsArgs
     commit conn
 
-{- | Looksup all movies a given actore plays in and returns a maybe list of movie.
-     The maybe will Nothing if there is no movie for a given actore -}
+{- | Looks up all movies a given actor plays in and returns a maybe list of movies.
+     The Maybe will return Nothing if there is no movie for a given actor -}
 searchMoviesInDB :: Connection -> String -> IO (Maybe [Movie])
 searchMoviesInDB conn name = do
   result <- quickQuery' conn ("SELECT movies.* FROM movies, actors, plays " ++
@@ -106,16 +106,16 @@ clearDatabase conn = do
    run conn "DROP TABLE IF EXISTS plays" []
    commit conn
 
--- | looks up all movies in the database and returns a list of all actores
+-- | looks up all movies in the database and returns a list of all actors
 getMoviesFromDatabase :: Connection -> IO [Movie]
 getMoviesFromDatabase conn = do
   result <- quickQuery' conn "SELECT * FROM movies" []
   return $ map (\x -> Movie (fromSql $ head x) (fromSql $ x !! 1)
                 (fromSql $ x !! 2)) result
 
--- | looks up all actores in the database and returns a list of all actores
+-- | looks up all actors in the database and returns a list of all actors
 getActorsFromDatabase :: Connection -> IO [Actor]
--- make the actor array correctly
+-- creates the actor array correctly
 getActorsFromDatabase conn = do
   result <- quickQuery' conn "SELECT * FROM actors" []
   let ids = map head result
@@ -128,7 +128,7 @@ getActorsFromDatabase conn = do
       parseMovie :: [SqlValue] -> Movie
       parseMovie x = Movie (fromSql $ head x) (fromSql $ x !! 1) (fromSql $ x !! 2)
 
-{- | removes all movies bevor a given date and deals with inconsistent states in the
+{- | removes all movies before a given date and deals with inconsistent states in the
      database after the deletion of a movie-}
 cleanupDatabase :: Connection -> String -> IO ()
 cleanupDatabase conn date = do

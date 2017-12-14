@@ -7,12 +7,13 @@
    Stability  : provisional
    Portability: portable
 
-This application is downloading all recent movies from the TheMovieDB api and
-stores it into a SQLite database. The user types in an actor and this application
-is looking this actor up and print out all movies he's playing in. For a given
-location it suggests cinemas in the areas that play this movie.
+   This purpose of the application is to download all the recent movies from the TheMovieDB API and
+   stores them into a SQLite database.
+   Main Functionality is as Follows: The user types in an actor in the Console; The application
+   will look this actor up and print out all movies he's playing in.
+   Then, for a given location it suggests cinemas in the areas that play this movie.
 
-Written by Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
+   Written by Johannes Hartmann, Liam Kelly, Manuel Campos Villarreal
 -}
 
 module Main where
@@ -30,7 +31,8 @@ import Control.Monad
 import qualified Network.HTTP.Conduit as N
 import Data.DateTime
 
-{- | The real application function. This function throws lots of exceptions witch will be handled in
+{- | The real application function. This function is responsible for filling up the database and interacting with the user.
+     This function throws lots of exceptions witch will be handled in
      the main function -}
 run :: IO ()
 run = do
